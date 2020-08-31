@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Overpass:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    background-color: #9A2217;
+    width: 100%;
+    height: 83px;
+    line-height: 84px;
+}
+
+.header-links > a {
+    margin-right: 30px;
+    color: white;
+    font-size: 36px;
+    font-family: 'Overpass', sans-serif;
+    text-decoration: none;
+}
+
+.peramoga-icon {
+    margin: 10px 0px 10px 40px;
+    height: 66px;
+    width: 122px;
+    display: block;
+    float: left;
+    border: 3px solid black;
+}
+
+.peramoga-title {
+    float: left;
+    margin-left: 10px;
+    color: white;
+    font-size: 48px;
+    font-family: 'Bangers', cursive;
+    -webkit-text-stroke-color: black;
+    -webkit-text-stroke-width: 1px;
+}
+
+.header-links {
+    margin: auto;
+    float: right;
+}
+
+.intro {
+    margin: auto;
+}
+
+.intro-text {
+    margin: 10% 20% 3% 20%;
+    font-size: 36px;
+    font-family: 'Indie Flower', cursive;
+}
+
+.bel-live {
+    margin: 0% 20% 2% 20%;
+    font-size: 36px;
+    font-family: 'Kanit', sans-serif;
+    text-align: center;
+}
+
+.peramoga-img {
+    width: 977px;
+    height: 535px;
+    display: block;
+    margin: 0 auto;
+}
+
+.hr-circle {
+	margin: 5%;
+	padding: 0;
+	height: 0;
+	border: none;
+	border-width: 0 0 5px;
+	border-style: solid;
+	border-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 1" width="8" height="4"><circle fill="slateblue" cx="1" cy="0.5" r="0.5"></circle></svg>') 0 0 100% repeat;
+	background-position: 50%;
+	box-sizing: border-box;
+	color: slateblue;
+}
+
+.opportunities-text {
+    font-size: 36px;
+    font-family: 'Pacifico', cursive;
+    text-align: center;
+}
+
+.chat-opportunities > img {
+    display: block;
+    margin: 0 auto;
+    width: 302px;
+    height: 280px;
+}
+
+.chat-opportunities > p {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 40px;
+    font-family: 'Caveat', cursive;
+}
+
+#grid-chat-opportunities {
+    padding: 40px;
+    display: grid;
+    grid-template-rows: repeat(1, auto);
+    grid-template-columns: repeat(3, auto);
+    grid-column-gap: 70px;
+}
+
+footer {
+    margin-top: 15%;
+    background-color: #9A2217;
+    width: 100%;
+    height: 112px;
+}
+
+footer > p {
+    float: left;
+    margin: 30px 0px 20px 40px;
+    font-size: 40px;
+    font-family: 'Caveat', cursive;
+}
+
+.footer-links {
+    float: right;
+    margin: 10px 30px 0px 0px;
+}
+
+.footer-links img {
+    width: 82px;
+    height: 82px;
+}
+
+.footer-links > a {
+    margin-right: 30px;
+    margin-top: 20px;
+}
+
+/* Mobile */
+
+@media screen and (max-width: 700px) {
+    
+    header {
+        height: 46px;
+        line-height: 47px;
+    }
+
+    .header-links > a {
+        margin-right: 15px;
+        font-size: 16px;
+    }
+
+    .peramoga-icon {
+        margin: 7px 0px 5px 20px;
+        height: 30px;
+        width: 40px;
+        border: 2px solid black;
+    }
+    
+    .peramoga-title {
+        font-size: 24px;
+    }
+    
+    .intro-text {
+        margin: 10% 10% 3% 10%;
+        font-size: 14px;
+    }
+
+    .bel-live {
+        font-size: 16px;
+    }
+    
+    .peramoga-img {
+        width: 216px;
+        height: 123px;
+    }
+
+    .hr-circle {
+        border-width: 0 0 3px;
+    }
+    
+    .opportunities-text {
+        font-size: 16px;
+    }
+    
+    .chat-opportunities > img {
+        width: 131px;
+        height: 105px;
+    }
+    
+    .chat-opportunities > p {
+        margin-bottom: 30px;
+        font-size: 18px;
+    }
+    
+    #grid-chat-opportunities {
+        grid-template-rows: repeat(3, auto);
+        grid-template-columns: repeat(1, auto);
+    }
+    
+    footer {
+        margin-top: 0;
+        height: 51px;
+    }
+    
+    footer > p {
+        margin: 15px 0px 10px 20px;
+        font-size: 16px;
+    }
+    
+    .footer-links {
+        float: right;
+        margin: 5px 5px 5px 5px;
+    }
+    
+    .footer-links img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .footer-links > a {
+        margin-right: 10px;
+    }
+}
