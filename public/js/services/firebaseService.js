@@ -10,7 +10,7 @@ class FirebaseService {
         return firebase.database().ref("/users");
     }
 
-    async writeUserData({uid}, email, username, name, surname) {
+    async writeUserData({uid}, email, username) {
         await this.usersRef().child(uid).set(
             {
                 email: email,

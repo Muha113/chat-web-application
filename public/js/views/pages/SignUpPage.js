@@ -1,6 +1,7 @@
 import {parseForm} from "../../helpers/parseFrom.js"
 import { Router } from "../../Router.js"
 import {firebaseService} from "../../services/index.js"
+import {linkNavigationHelper} from "../../helpers/linkNavigationHelper.js"
 
 let SignUpPage = {
     render: async () => {
@@ -19,7 +20,7 @@ let SignUpPage = {
                         </form>
                         <section class="section-account">
                             <p class="section-account-text">Already have an account?</p>
-                            <a class="section-account-link" href="">Sign In</a>
+                            <a id="have-acc-link" class="section-account-link" href="/login">Sign In</a>
                         </section>
                     </div>`
 
@@ -27,21 +28,41 @@ let SignUpPage = {
     },
     after_render: async () => {
         document.getElementById('index-css-link').href = '../../../css/enter-app.css'
+
         let form = document.getElementById('form-reg')
         form.addEventListener("submit", (event) => {
             event.preventDefault()
             let formValues = parseForm(form)
-            console.log(formValues["username"])
-            console.log(formValues["email"])
-            console.log(formValues["pass"])
-            console.log(formValues["conf-pass"])
-            // Router._instance.navigate('/login')
-            register(formValues)
+
+            if (formValues["pass"] != formValues["conf-pass"]) {
+                alert("Wrong confirm password")
+            } else {
+                register(formValues)
+            }
+        })
+
+        let haveAccLink = document.getElementById('have-acc-link')
+        haveAccLink.addEventListener("click", (event) => {
+            event.preventDefault()
+            linkNavigationHelper(event)
         })
     }
 }
 
 function register(values) {
+    const auth = firebase.auth();
+    auth.createUserWithEmailAndPassword(values["email"], values["pass"])
+        .then((res) => {
+            return res.user.updateProfile({displayName: values["username"]})
+                .then(() => {
+                    firebaseService.writeUserData(auth.currentUser, values["email"], values["username"]);
+                    localStorage.setItem("username", values["username"])
+                    alert("Reg success")
+                    // Router._instance.navigate("/profile");
+                })
+        }).catch(error => {
+            alert(error);
+        });
 }
 
 export default SignUpPage;
