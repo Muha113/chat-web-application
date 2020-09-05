@@ -1,0 +1,47 @@
+import {parseForm} from "../../helpers/parseFrom.js"
+import { Router } from "../../Router.js"
+import {firebaseService} from "../../services/index.js"
+
+let SignUpPage = {
+    render: async () => {
+        let view = `
+                    <div class="register-div">
+                        <section class="reg-welcome-section">
+                            <p class="welcome-section-text">Welcome</p>
+                            <img class="welcome-section-img-register" src="img/register_icon.webp" alt="registration form">
+                        </section>
+                        <form id="form-reg">
+                            <input name="username" type="text" placeholder="Username" required>
+                            <input name="email" type="email" placeholder="Email" required>
+                            <input name="pass" type="password" placeholder="Password" required>
+                            <input name="conf-pass" type="password" placeholder="Confirm password" required>
+                            <input id="submit-reg" class="form-submit-button" type="submit" value="Sign Up">
+                        </form>
+                        <section class="section-account">
+                            <p class="section-account-text">Already have an account?</p>
+                            <a class="section-account-link" href="">Sign In</a>
+                        </section>
+                    </div>`
+
+        return view
+    },
+    after_render: async () => {
+        document.getElementById('index-css-link').href = '../../../css/enter-app.css'
+        let form = document.getElementById('form-reg')
+        form.addEventListener("submit", (event) => {
+            event.preventDefault()
+            let formValues = parseForm(form)
+            console.log(formValues["username"])
+            console.log(formValues["email"])
+            console.log(formValues["pass"])
+            console.log(formValues["conf-pass"])
+            // Router._instance.navigate('/login')
+            register(formValues)
+        })
+    }
+}
+
+function register(values) {
+}
+
+export default SignUpPage;
