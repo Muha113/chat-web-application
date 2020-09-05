@@ -12,7 +12,6 @@ export class Router {
         this.routes = routes;
         window.addEventListener('popstate', event => this._onPopState(event));
 
-        // console.log('xuy')
     }
 
     _onPopState(){
@@ -20,7 +19,6 @@ export class Router {
             this.currentPage.onDestroy();
         }
 
-        // console.log('pizda')
         this.loadPage(this.parseCurrentURL())
     }
 
@@ -37,7 +35,6 @@ export class Router {
         // firebase.auth().onAuthStateChanged(function(user) {
         //     router.render_header()
         // });
-        // console.log('zhopa')
         return router;
     }
 
@@ -54,8 +51,6 @@ export class Router {
         
         history.pushState({}, "", url);
 
-        // console.log('govno')
-
         let parseURL = this.parseCurrentURL()
         this.loadPage(parseURL)
     }
@@ -65,7 +60,6 @@ export class Router {
         // const header = null || document.getElementById('header_container');
         // header.innerHTML = await Header.render();
         // await Header.after_render(url);
-        // console.log('ochko')
 
         this.currentPage = Error404
         for (const { path, page} of Router._instance.routes) {
@@ -79,14 +73,12 @@ export class Router {
     }
 
     parseCurrentURL(){
-        // console.log('sosi')
         let request = Utils.parseRequestURL()
         let parsedURL = (request.resource ? '/' + request.resource : '/') + (request.id ? '/:id' : '') + (request.verb ? '/' + request.verb : '')
         return parsedURL
     }
 
     async _loadInitial(){
-        // console.log('dadaya')
         let url = window.location.pathname;
         this.navigate(url)
     }
