@@ -353,8 +353,12 @@ table {
     display: flex;
     align-items: center;
     padding-right: 60px;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 130px;
+}
+
+.top-nav .user .name {
+    margin-left: 20px;
 }
 
 .top-nav .user .name span {

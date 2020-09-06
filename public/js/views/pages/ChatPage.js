@@ -56,8 +56,7 @@ let ChatPage = {
 
                             <div class="chat-content">
                                 <div class="messages">
-                                    <div id="chat-messages" class="message-container">
-
+                                    <div id="chat-block" class="message-container">
                                     </div>
                                 </div>
 
@@ -101,12 +100,15 @@ let ChatPage = {
         directMsgList.innerHTML += chatMenu.directMessages("Coolizh", 0)
         directMsgList.innerHTML += chatMenu.directMessages("Mukha", 2)
 
-        let chatRoom = document.getElementById("chat-messages")
-        chatRoom.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
-        chatRoom.innerHTML += chatWindow.simpleMessage("How are you?")
-        chatRoom.innerHTML += chatWindow.firstMessage(user.displayName, "9:58", "Im fine thanks")
-        chatRoom.innerHTML += chatWindow.dateSeparator("August 21, 2020")
-        chatRoom.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
+        let chatRoom = document.getElementById("chat-block")
+        chatRoom.innerHTML += `<ul id="chat-messages"></ul>`
+
+        let chatMsgList = document.getElementById("chat-messages")
+        chatMsgList.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
+        chatMsgList.innerHTML += chatWindow.simpleMessage("How are you?")
+        chatMsgList.innerHTML += chatWindow.firstMessage(user.displayName, "9:58", "Im fine thanks")
+        chatMsgList.innerHTML += chatWindow.dateSeparator("August 21, 2020")
+        chatMsgList.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
     }
 }
 

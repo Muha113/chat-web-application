@@ -1,3 +1,5 @@
+<!-- new version of chat.html -->
+
 <!DOCTYPE html>
 <html>
 
@@ -5,8 +7,6 @@
     <meta charset="UTF-8">
     <title>Chat</title>
     <link rel="stylesheet" href="css/chat.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
-integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 </head>
 
 <body>
@@ -45,21 +45,20 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
 
                     <ul class="content">
                         <li class="channel private">
-                            <div class="name">
+                            <button class="name">
                                 <!-- <div class="icon"></div> -->
                                 <img class="private-icon" src="img/zamochek-icon.png" alt="">
                                 Channel 1
-                            </div>
+                            </button>
                             <div class="count-unread-messages">7</div>
                         </li>
                         <li class="channel">
-                            <div class="name">Channel 2</div>
+                            <button class="name">Channel 2</button>
                             <div class="count-unread-messages">145</div>
                         </li>
                         <li class="channel private">
                             <button class="name">
-                                <!-- <img class="private-icon" src="img/zamochek-icon.png" alt=""> -->
-                                <i class="fas fa-lock"></i>
+                                <img class="private-icon" src="img/zamochek-icon.png" alt="">
                                 Channel 3
                             </button>
                             <div class="count-unread-messages none"></div>
@@ -80,9 +79,9 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
 
                     <ul class="content">
                         <li class="user">
-                            <div class="name">
+                            <button class="name">
                                 Coolinzh
-                            </div>
+                            </button>
                             <div class="count-unread-messages">2</div>
                         </li>
                         <li class="user">
@@ -127,7 +126,7 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
                                     <div class="photo">
                                         <img src="img/man.jpg" alt="user photo">
                                     </div>
-                                    <div>
+                                    <div class="expand-width">
                                         <div class="user-info">
                                                 <div class="name">Friend</div>
                                                 <div class="time">21:47</div>
@@ -143,18 +142,20 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
                                         How are you?)
                                     </div>
                                 </li>
-                            </ul>
+                            <!-- </ul> -->
                             
-                            <div class="separate">
-                                <div class="text">August 21, 2020</div>
-                            </div>
+                                <li class="date-separator">
+                                    <div class="separate">
+                                        <div class="text">August 21, 2020</div>
+                                    </div>
+                                </li>
                             
-                            <ul>
+                            <!-- <ul> -->
                                 <li class="first">
                                     <div class="photo">
                                         <img src="img/avatar.png" alt="user photo">
                                     </div>
-                                    <div>
+                                    <div class="expand-width">
                                         <div class="user-info">
                                             <div class="name">Username</div>
                                             <div class="time">9:54</div>
@@ -171,14 +172,14 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
                                         eqweqwe
                                     </div>
                                 </li>
-                            </ul>
+                            <!-- </ul> -->
                             
-                            <ul>
+                            <!-- <ul> -->
                                 <li class="first">
                                     <div class="photo">
                                         <img src="img/man.jpg" alt="user photo">
                                     </div>
-                                    <div>
+                                    <div class="expand-width">
                                         <div class="user-info">
                                             <div class="name">Friend</div>
                                             <div class="time">9:56</div>
@@ -195,13 +196,14 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
                                         12312312
                                     </div>
                                 </li>
-                            </ul>
-                            <ul>
+                            <!-- </ul> -->
+
+                            <!-- <ul> -->
                                 <li class="first">
                                     <div class="photo">
                                         <img src="img/avatar.png" alt="user photo">
                                     </div>
-                                    <div>
+                                    <div class="expand-width">
                                         <div class="user-info">
                                             <div class="name">Username</div>
                                             <div class="time">9:54</div>
@@ -249,3 +251,5 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
 </body>
 
 </html>
+
+<!-- end of chat.html -->
