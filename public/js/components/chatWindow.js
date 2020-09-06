@@ -4,10 +4,10 @@ export let firstMessage = (username, time, msg) => {
                                         <div class="photo">
                                             <img src="img/man.jpg" alt="user photo">
                                         </div>
-                                        <div>
+                                        <div class="expand-width">
                                             <div class="user-info">
-                                                    <div class="name">${username}</div>
-                                                    <div class="time">${time}</div>
+                                                <div class="name">${username}</div>
+                                                <div class="time">${time}</div>
                                             </div>
 
                                             <div class="message">
@@ -30,9 +30,11 @@ export let simpleMessage = (msg) => {
 
 export let dateSeparator = (date) => {
                     let separator = `
-                                    <div class="separate">
-                                        <div class="text">${date}</div>
-                                    </div>`
+                                    <li class="date-separator">
+                                        <div class="separate">
+                                            <div class="text">${date}</div>
+                                        </div>
+                                    </li>`
     return separator
 }
                     

@@ -102,17 +102,11 @@ let ChatPage = {
         directMsgList.innerHTML += chatMenu.directMessages("Mukha", 2)
 
         let chatRoom = document.getElementById("chat-messages")
-        chatRoom.innerHTML += `<ul>
-                                    ${chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")}
-                                    ${chatWindow.simpleMessage("How are you?")}
-                                </ul>`
-        chatRoom.innerHTML += `<ul>
-                                    ${chatWindow.firstMessage(user.displayName, "9:58", "Im fine thanks")}
-                                </ul>`
+        chatRoom.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
+        chatRoom.innerHTML += chatWindow.simpleMessage("How are you?")
+        chatRoom.innerHTML += chatWindow.firstMessage(user.displayName, "9:58", "Im fine thanks")
         chatRoom.innerHTML += chatWindow.dateSeparator("August 21, 2020")
-        chatRoom.innerHTML += `<ul>
-                                    ${chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")}
-                                </ul>`
+        chatRoom.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
     }
 }
 
