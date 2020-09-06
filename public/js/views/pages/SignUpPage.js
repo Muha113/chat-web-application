@@ -57,8 +57,8 @@ function register(values) {
                 .then(() => {
                     firebaseService.writeUserData(auth.currentUser, values["email"], values["username"]);
                     localStorage.setItem("username", values["username"])
-                    alert("Reg success")
-                    // Router._instance.navigate("/profile");
+                    // alert("Reg success")
+                    Router._instance.navigate("/chat");
                 })
         }).catch(error => {
             alert(error);

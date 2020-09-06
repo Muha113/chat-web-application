@@ -1,6 +1,5 @@
 import {parseForm} from "../../helpers/parseFrom.js"
 import { Router } from "../../Router.js"
-import {firebaseService} from "../../services/index.js"
 import {linkNavigationHelper} from "../../helpers/linkNavigationHelper.js"
 
 let SignInPage = {
@@ -47,8 +46,8 @@ function login(values) {
     const auth = firebase.auth();
     auth.signInWithEmailAndPassword(values["email"], values["pass"])
         .then(() => {
-            // Router._instance.navigate("/profile");
-            alert("Auth success")
+            Router._instance.navigate("/chat");
+            // alert("Auth success")
         })
         .catch(error => {
             alert(error);
