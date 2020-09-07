@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200&display=swap');
 
 
 * {
@@ -40,6 +42,11 @@ table {
 	border-spacing: 0;
 }
 
+button {
+    background: transparent;
+    cursor: pointer;
+}
+
 /* end */
 
 .arrow-down {
@@ -77,7 +84,14 @@ table {
     overflow-x: hidden;
 }
 
-.messages .message-container ul {
+.message-container .message {
+    font-family: 'Quicksand', sans-serif;
+    margin-top: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.messages .message-container ol {
     display: flex;
     flex-direction: column;
     margin: 25px;
@@ -86,6 +100,16 @@ table {
 .messages .message-container li {
     display: flex;
     flex-direction: column;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.messages .message-container div.message:hover {
+    background: #c8c8c8;
+}
+
+.messages .message-container .first .expand-width {
+    width: 100%;
 }
 
 .messages .message-container li:not(.first) {
@@ -94,6 +118,7 @@ table {
 
 .messages .message-container li.first {
     flex-direction: row;
+    margin-top: 20px;
 }
 
 .messages .message-container li.first > div:last-of-type {
@@ -206,11 +231,14 @@ table {
     display: flex;
     justify-content: space-between;
     padding-left: 20px;
-    padding-top: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     margin-top: 25px;
     /* margin-bottom: 20px; */
     margin-left: 30px;
     font-size: 14px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: bold;
 }
 
 .add-icon img {
@@ -250,8 +278,7 @@ table {
 .chat .menu .content .channel.private .name .private-icon {
     /* content: ""; */
     width: 15px;
-    height: 15px;
-    
+    height: 15px;   
 }
 
 .chat .menu .content .channel .icon {
@@ -265,6 +292,10 @@ table {
 .chat .menu .content .count-unread-messages.none::before {
     content: "";
 }
+
+/* .chat .menu .content .count-unread-messages {
+    
+} */
 
 .chat .menu .content .user.online .icon {
     content: "";
@@ -335,4 +366,24 @@ table {
     font-family: sans-serif;
     font-size: 16px;
     font-weight: bold;
+}
+
+.content li:hover {
+    background: #7d7d7d;
+}
+
+.content .channel .name,
+.content .user .name {
+    width: 80%;
+    background: transparent;
+    color: black;
+    text-align: start;
+    cursor: pointer;
+    height: 20px;
+}
+
+.content > li {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
 }
