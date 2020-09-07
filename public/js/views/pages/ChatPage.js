@@ -3,6 +3,12 @@ import * as chatMenu from "../../components/chatsMenu.js"
 import * as chatWindow from "../../components/chatWindow.js"
 import {Message} from "../../models/message.js"
 
+let currentUserState = {
+    chatType: "",
+    id: ""
+}
+
+
 let ChatPage = {
     render: async () => {
         let view = `
@@ -88,11 +94,6 @@ let ChatPage = {
     after_render: async () => {
         document.getElementById('index-css-link').href = '../../../css/chat.css'
 
-        let currentUserState = {
-            chatType: "",
-            id: ""
-        }
-
         let user = firebase.auth().currentUser
 
         let header = document.getElementById("chat-header")
@@ -107,8 +108,34 @@ let ChatPage = {
         channelsList.innerHTML += chatMenu.channelPrivate("Private channel", 8)
         */
 
+        // динамическая подгрузка чатов в меню слева
         let directMsgList = document.getElementById("direct-msgs-list")
-        uploadDirect(directMsgList, userChats)
+        await uploadDirect(directMsgList, userChats)
+
+        // добавление обработчиков на кнопки выбора чата
+        let directMenu = document.getElementById("direct-msgs-list")
+        directMenu.addEventListener("click", async (event) => {
+            let element = document.getElementById(event.target.id)
+            if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
+                event.preventDefault()
+                console.log("button handler detected, btn id : " + event.target.id)
+                currentUserState.id = event.target.id
+                let chatMsgList = document.getElementById("chat-messages")
+                chatMsgList.innerHTML = ""
+                let messages = await getChatMessages(currentUserState.id)
+                console.log("messages: {")
+                console.log(messages)
+                console.log("}")
+                for (const msg of messages) {
+                    chatMsgList.innerHTML += chatWindow.firstMessage(
+                        msg[msg.id].username,
+                        msg[msg.id].time,
+                        msg[msg.id].text
+                    )
+                }
+            }
+        })
+        // event.target.classList.content('chat-button')
 
         // блок окна переписки
         let chatRoom = document.getElementById("chat-block")
@@ -117,18 +144,20 @@ let ChatPage = {
         // список в который толкать сообщеньки
         let chatMsgList = document.getElementById("chat-messages")
 
+        // тестовая подписка на все досупные щас чаты
         let ttt = ["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6", "-MGbuPf19GBPpuMIDbUM"]
         for (let i = 0; i < 3; i++) {
             firebase.database().ref("/chat/" + ttt[i] + "/messages").on("child_added", (snapshot) => {
-                console.log("recieved message")
-                chatMsgList.innerHTML += chatWindow.firstMessage(
-                    snapshot.val().username,
-                    snapshot.val().time,
-                    snapshot.val().text
-                )
+                console.log("message recieved -> user chat id: " + currentUserState.id + ", message chat id: " + snapshot.val().chatId)
+                if (currentUserState.id == snapshot.val().chatId) {
+                    chatMsgList.innerHTML += chatWindow.firstMessage(
+                        snapshot.val().username,
+                        snapshot.val().time,
+                        snapshot.val().text
+                    )
+                }
             })
         }  
-        
 
         // сделать id в порядке возрастания, иначе сообщения будут в рандомном порядке
         // тоже самое для чатов
@@ -142,18 +171,13 @@ let ChatPage = {
         let typeMsgInput = document.getElementById("type-message")
         let sendMsgButton = document.getElementById("send-message")
 
+        // отослать сообщение, добавление в бд сообщения
         sendMsgButton.addEventListener('click', (event) => {
             event.preventDefault()
             console.log(firebase.auth().currentUser.displayName)
             if (typeMsgInput.value != "") {
-                let ll
-                if (firebase.auth().currentUser.displayName == "popa") {
-                    ll = "-MGbpneEnnuD11WkVngn"
-                } else if (firebase.auth().currentUser.displayName == "dadaya") {
-                    ll = "-MGbuPezLdWBFhIfBga6"
-                }
-
-                firebase.database().ref("/chat/" + ll + "/messages").push({
+                firebase.database().ref("/chat/" + currentUserState.id + "/messages").push({
+                    chatId: currentUserState.id,
                     username: firebase.auth().currentUser.displayName,
                     isRead: true,
                     text: typeMsgInput.value,
@@ -175,12 +199,23 @@ async function getUserChats() {
     }
 }
 
+async function getChatMessages(id) {
+    const snapshot = await firebase.database().ref("/chat/" + id + "/messages").once("value")
+    if (snapshot.exists()) {
+        // return snapshot.val()
+        return [...Object.keys(snapshot.val()).map(key => ({
+            id: key,
+            ...snapshot.val()
+        }))]
+    }
+}
+
 async function uploadDirect(directList, directChats) {
     for (const elem of directChats) {
         const chatData = await firebase.database().ref("/chat/" + elem).once("value")
         if (chatData.exists()) {
             console.log(chatData.val())
-            directList.innerHTML += chatMenu.directMessages(elem, chatData.val().chatName, 5)
+            directList.innerHTML += chatMenu.directMessages(elem, chatData.val().chatName, 0)
         }
     }
 }

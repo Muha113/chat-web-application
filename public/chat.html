@@ -1,5 +1,3 @@
-<!-- new version of chat.html -->
-
 <!DOCTYPE html>
 <html>
 
@@ -11,7 +9,7 @@
 
 <body>
     <div class="page">
-        <div class="top-nav">
+        <nav class="top-nav">
             <div class="logo">
                 <img src="img/logo.png" alt="logo">
             </div>
@@ -28,19 +26,19 @@
                     <span>Username</span>
                 </div>
             </div>
-        </div>
+        </nav>
 
         <div class="chat">
             <div class="menu">
                 <div class="menu-item">
                     <div class="header">
-                        <div class="title">
-                            <div class="arrow-down"></div>
+                        <h1 class="title">
+                            <button class="arrow-down"></button>
                             Channels
-                        </div>
-                        <div class="add-icon">
+                        </h1>
+                        <button class="add-icon">
                             <img src="img/plus-icon.png" alt="">
-                        </div>
+                        </button>
                     </div>
 
                     <ul class="content">
@@ -69,12 +67,12 @@
                 <div class="menu-item">
                     <div class="header">
                         <div class="title">
-                            <div class="arrow-down"></div>
+                            <button class="arrow-down"></button>
                             Direct messages
                         </div>
-                        <div class="add-icon">
+                        <button class="add-icon">
                             <img src="img/plus-icon.png" alt="">
-                        </div>
+                        </button>
                     </div>
 
                     <ul class="content">
@@ -121,7 +119,7 @@
             <div class="chat-content">
                 <div class="messages">
                     <div class="message-container">
-                            <ul>
+                            <ol>
                                 <li class="first">
                                     <div class="photo">
                                         <img src="img/man.jpg" alt="user photo">
@@ -129,7 +127,7 @@
                                     <div class="expand-width">
                                         <div class="user-info">
                                                 <div class="name">Friend</div>
-                                                <div class="time">21:47</div>
+                                                <time datetime="23:45" class="time">21:47</time>
                                         </div>
                                 
                                         <div class="message">
@@ -146,7 +144,7 @@
                             
                                 <li class="date-separator">
                                     <div class="separate">
-                                        <div class="text">August 21, 2020</div>
+                                        <time datetime="2012-12-23" class="text">2020-08-21</time>
                                     </div>
                                 </li>
                             
@@ -225,7 +223,7 @@
                                         412412412
                                     </div>
                                 </li>
-                            </ul>
+                            </ol>
                         </div>
                 </div>
                 <div class="create-mesage">
@@ -251,5 +249,3 @@
 </body>
 
 </html>
-
-<!-- end of chat.html -->
