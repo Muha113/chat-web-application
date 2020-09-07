@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: linear-gradient(243.74deg, rgba(247, 5, 5, 0.8) 0%, #CFA7BE 51.66%, rgba(231, 18, 18, 0.8) 99.19%);
+}
+
+.register-div {
+    background-color: #FFFFFF;
+    margin: 10% 35% 20% 35%;
+    border-radius: 49px;
+}
+
+.reg-welcome-section {
+    display: block;
+    padding-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome-section-text {
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    font-family: 'Abril Fatface', cursive;
+}
+
+.welcome-section-img-register {
+    width: 84px;
+    height: 84px;
+    display: block;
+    margin: 30px auto 30px auto;
+}
+
+.welcome-section-img-login {
+    width: 138px;
+    height: 97px;
+    display: block;
+    margin: 30px auto 30px auto;
+}
+
+form > input {
+    text-align: left;
+    padding: 20px;
+    margin-top: 20px;
+	margin-bottom: 20px;
+	margin-left: 30%;
+	width: 45%;
+	height: 15px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom-color: black;
+}
+
+.form-submit-button {
+    background: linear-gradient(89.97deg, #ED0B0B 0.03%, #2602FF 99.97%);
+    border-radius: 60px;
+    margin-top: 50px;
+    text-align: center;
+    line-height: 0px;
+    color: white;
+    height: 69px;
+    font-family: 'Lobster', cursive;
+    font-size: 36px;
+    border-bottom: none;
+}
+
+.section-account {
+    display: flex;
+    padding-bottom: 40px;
+    padding-top: 30px;
+    justify-content: space-evenly;
+}
+
+.section-account-text {
+    font-family: 'Overpass', sans-serif;
+    font-size: 18px;
+}
+
+.section-account-link {
+    font-family: 'Lobster', cursive;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+@media screen and (max-width: 700px) {
+
+    .register-div {
+        margin: 25% 15% 20% 15%;
+    }
+
+    .reg-welcome-section {
+        padding-top: 10px;
+    }
+    
+    .welcome-section-text {
+        font-size: 24px;
+    }
+    
+    .welcome-section-img-register {
+        width: 45px;
+        height: 45px;
+        margin: 15px auto 20px auto;
+    }
+    
+    .welcome-section-img-login {
+        width: 90px;
+        height: 69px;
+    }
+    
+    form > input {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-left: 17%;
+        width: 70%;
+        border-bottom-width: medium;
+    }
+    
+    .form-submit-button {
+        margin-top: 30px;
+        height: 26px;
+        font-size: 12px;
+    }
+    
+    .section-account {
+        padding-top: 20px;
+    }
+    
+    .section-account-text {
+        font-size: 14px;
+    }
+    
+    .section-account-link {
+        font-size: 14px;
+    }
+}
