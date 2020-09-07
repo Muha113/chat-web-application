@@ -1,6 +1,7 @@
 import {userHeader} from "../../components/chatHeader.js"
 import * as chatMenu from "../../components/chatsMenu.js"
 import * as chatWindow from "../../components/chatWindow.js"
+import {Message} from "../../models/message.js"
 
 let ChatPage = {
     render: async () => {
@@ -69,6 +70,7 @@ let ChatPage = {
                     
                                             <div class="message">
                                                 <input id="type-message" type="text" placeholder="Just start typing message">
+                                                <button id="send-message">Send</button>
                                             </div>
                     
                                             <div class="smile">
@@ -86,29 +88,100 @@ let ChatPage = {
     after_render: async () => {
         document.getElementById('index-css-link').href = '../../../css/chat.css'
 
+        let currentUserState = {
+            chatType: "",
+            id: ""
+        }
+
         let user = firebase.auth().currentUser
 
         let header = document.getElementById("chat-header")
         header.innerHTML += userHeader(user.displayName)
+
+        let userChats = await getUserChats()
         
+        /* сделать тоже самое что и с directMsgList
         let channelsList = document.getElementById("channels-list")
         channelsList.innerHTML += chatMenu.channel("Six Group", 14)
         channelsList.innerHTML += chatMenu.channel("Test Channel", 150)
         channelsList.innerHTML += chatMenu.channelPrivate("Private channel", 8)
+        */
 
         let directMsgList = document.getElementById("direct-msgs-list")
-        directMsgList.innerHTML += chatMenu.directMessages("Coolizh", 0)
-        directMsgList.innerHTML += chatMenu.directMessages("Mukha", 2)
+        uploadDirect(directMsgList, userChats)
 
+        // блок окна переписки
         let chatRoom = document.getElementById("chat-block")
         chatRoom.innerHTML += `<ul id="chat-messages"></ul>`
 
+        // список в который толкать сообщеньки
         let chatMsgList = document.getElementById("chat-messages")
-        chatMsgList.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
-        chatMsgList.innerHTML += chatWindow.simpleMessage("How are you?")
-        chatMsgList.innerHTML += chatWindow.firstMessage(user.displayName, "9:58", "Im fine thanks")
-        chatMsgList.innerHTML += chatWindow.dateSeparator("August 21, 2020")
-        chatMsgList.innerHTML += chatWindow.firstMessage("Gnome", "9:54", "Hi bro)")
+
+        let ttt = ["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6", "-MGbuPf19GBPpuMIDbUM"]
+        for (let i = 0; i < 3; i++) {
+            firebase.database().ref("/chat/" + ttt[i] + "/messages").on("child_added", (snapshot) => {
+                console.log("recieved message")
+                chatMsgList.innerHTML += chatWindow.firstMessage(
+                    snapshot.val().username,
+                    snapshot.val().time,
+                    snapshot.val().text
+                )
+            })
+        }  
+        
+
+        // сделать id в порядке возрастания, иначе сообщения будут в рандомном порядке
+        // тоже самое для чатов
+
+        // firebase.database().ref("/users/d4CPJQXmzJZaQ7fwCt6G32MP2fg1/channelsConnected").set([""])
+        // firebase.database().ref("/users/d4CPJQXmzJZaQ7fwCt6G32MP2fg1/chatsConnected").set(["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6"])
+        // firebase.database().ref("/users/qcCpy2FzABUM3hpBfPB06YQkvIk2/channelsConnected").set([""])
+        // firebase.database().ref("/users/qcCpy2FzABUM3hpBfPB06YQkvIk2/chatsConnected").set(["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6"])
+        
+        // отправка сообщенек
+        let typeMsgInput = document.getElementById("type-message")
+        let sendMsgButton = document.getElementById("send-message")
+
+        sendMsgButton.addEventListener('click', (event) => {
+            event.preventDefault()
+            console.log(firebase.auth().currentUser.displayName)
+            if (typeMsgInput.value != "") {
+                let ll
+                if (firebase.auth().currentUser.displayName == "popa") {
+                    ll = "-MGbpneEnnuD11WkVngn"
+                } else if (firebase.auth().currentUser.displayName == "dadaya") {
+                    ll = "-MGbuPezLdWBFhIfBga6"
+                }
+
+                firebase.database().ref("/chat/" + ll + "/messages").push({
+                    username: firebase.auth().currentUser.displayName,
+                    isRead: true,
+                    text: typeMsgInput.value,
+                    time: "11:50"
+                })
+                .then(res => {
+                    console.log(res.getKey())
+                })
+                .catch(error => console.log(error));
+            }
+        })
+    }
+}
+
+async function getUserChats() {
+    const snapshot = await firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").once("value")
+    if (snapshot.exists()) {
+        return snapshot.val()
+    }
+}
+
+async function uploadDirect(directList, directChats) {
+    for (const elem of directChats) {
+        const chatData = await firebase.database().ref("/chat/" + elem).once("value")
+        if (chatData.exists()) {
+            console.log(chatData.val())
+            directList.innerHTML += chatMenu.directMessages(elem, chatData.val().chatName, 5)
+        }
     }
 }
 
