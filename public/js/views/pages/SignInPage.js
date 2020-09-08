@@ -47,7 +47,6 @@ function login(values) {
     auth.signInWithEmailAndPassword(values["email"], values["pass"])
         .then(() => {
             Router._instance.navigate("/chat");
-            // alert("Auth success")
         })
         .catch(error => {
             alert(error);
