@@ -13,22 +13,18 @@ export function innerMessage(snapshot, currentUsersStateId, elem) {
 }
 
 export async function setCurrentChat(newChatId) {
-    let element = document.getElementById(event.target.id)
-            if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
-                event.preventDefault()
-                console.log("button handler detected, btn id : " + newChatId)
-                let chatMsgList = document.getElementById("chat-messages")
-                chatMsgList.innerHTML = ""
-                let messages = await firebaseService.getChatMessages(newChatId)
-                console.log("messages: {")
-                console.log(messages)
-                console.log("}")
-                for (const msg of messages) {
-                    chatMsgList.innerHTML += chatWindow.firstMessage(
-                        msg[msg.id].username,
-                        msg[msg.id].time,
-                        msg[msg.id].text
-                    )
-                }
-            }
+    console.log("button handler detected, btn id : " + newChatId)
+    let chatMsgList = document.getElementById("chat-messages")
+    chatMsgList.innerHTML = ""
+    let messages = await firebaseService.getChatMessages(newChatId)
+    console.log("messages: {")
+    console.log(messages)
+    console.log("}")
+    for (const msg of messages) {
+        chatMsgList.innerHTML += chatWindow.firstMessage(
+            msg[msg.id].username,
+            msg[msg.id].time,
+            msg[msg.id].text
+        )
+    }
 }

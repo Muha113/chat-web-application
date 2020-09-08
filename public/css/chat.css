@@ -47,6 +47,14 @@ button {
     cursor: pointer;
 }
 
+button:active, button:focus {
+    outline: none;
+}
+  
+button::-moz-focus-inner {
+    border: 0;
+}
+
 /* end */
 
 .arrow-down {
@@ -430,4 +438,28 @@ button {
 .list-show-border {
     list-style-position: inside;
     margin: 0px !important;
+}
+
+.search .search-button {
+    border-radius: 10px;
+    background: white;
+    margin-left: 10px;
+    height: 25px;
+    width: 100px;
+}
+
+.create-mesage .content .message .send-message-button {
+    margin-left: 10px;
+    height: 50px;
+}
+
+.add-new-chat-button {
+    background-image: url("../img/plus-icon.png");
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    background-size: 20px 20px;
+    margin-right: 10px;
+    border: none;
+    height: 20px;
+    width: 20px;
 }

@@ -11,6 +11,14 @@
     margin: 0;
 }
 
+button:active, button:focus {
+    outline: none;
+}
+  
+button::-moz-focus-inner {
+    border: 0;
+}
+
 header {
     background-color: #9A2217;
     width: 100%;

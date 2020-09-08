@@ -72,6 +72,13 @@ class FirebaseService {
         })
         .catch(error => console.log(error));
     }
+
+    addChatToUser(chatId) {
+    }
+
+    setNewChatsToUser(chatsIds) {
+        firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").set(chatsIds)
+    }
 }
 
 export default FirebaseService

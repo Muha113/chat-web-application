@@ -9,6 +9,14 @@
     margin: 0;
 }
 
+button:active, button:focus {
+    outline: none;
+}
+  
+button::-moz-focus-inner {
+    border: 0;
+}
+
 body {
     background: linear-gradient(243.74deg, rgba(247, 5, 5, 0.8) 0%, #CFA7BE 51.66%, rgba(231, 18, 18, 0.8) 99.19%);
 }
