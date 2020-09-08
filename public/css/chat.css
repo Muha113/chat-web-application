@@ -42,6 +42,11 @@ table {
 	border-spacing: 0;
 }
 
+button {
+    background: transparent;
+    cursor: pointer;
+}
+
 /* end */
 
 .arrow-down {
@@ -86,7 +91,7 @@ table {
     padding-bottom: 10px;
 }
 
-.messages .message-container ul {
+.messages .message-container ol {
     display: flex;
     flex-direction: column;
     margin: 25px;
@@ -385,4 +390,44 @@ table {
     padding-top: 20px;
     padding-bottom: 20px;
     padding-right: 10px;
+}
+
+.search-list-item {
+    padding: 25px;
+    display: flex;
+    justify-content: flex-start;
+    border-bottom: 1px solid;
+}
+
+.search-list-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+}
+
+.search-list-item-icon.private {
+    margin-left: 20px;
+}
+
+.search-list-item-header {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.search-list-item-members {
+    display: flex;
+    align-items: center;
+    margin-left: 40px;
+    font-size: 18px;
+}
+
+.search-list-li-nomargin {
+    margin: 0px !important;
+}
+
+.list-show-border {
+    list-style-position: inside;
+    margin: 0px !important;
 }
