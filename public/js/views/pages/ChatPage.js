@@ -6,11 +6,12 @@ import {firebaseService} from "../../services/index.js"
 import * as chatHandlers from "../../handlers/chatHandlers.js"
 import * as searchChatsHandlers from "../../handlers/searchChatsHandlers.js"
 import * as menuHandlers from "../../handlers/menuHandlers.js"
+import {presentModal} from "../../services/modalService.js"
+import AddDirectModal from "./AddDirectModal.js"
+import AddChannelModal from "./AddChannelModal.js"
+import StickersModal from "./StickersModal.js"
+import {currentUserState} from "../../services/currentUserState.js"
 
-let currentUserState = {
-    chatType: "",
-    id: ""
-}
 
 let ChatPage = {
     render: async () => {
@@ -40,9 +41,7 @@ let ChatPage = {
                                             <div class="arrow-down"></div>
                                             Channels
                                         </div>
-                                        <div class="add-icon">
-                                            <img src="img/plus-icon.png" alt="">
-                                        </div>
+                                        <button id="add-channel-button" class="add-icon"></button>
                                     </div>
 
                                     <ul id="channels-list" class="content">
@@ -56,9 +55,7 @@ let ChatPage = {
                                             <div class="arrow-down"></div>
                                             Direct messages
                                         </div>
-                                        <div class="add-icon">
-                                            <img src="img/plus-icon.png" alt="">
-                                        </div>
+                                        <button id="add-direct-button" class="add-icon"></button>
                                     </div>
 
                                     <ul id="direct-msgs-list" class="content">
@@ -89,9 +86,7 @@ let ChatPage = {
                                                 <button id="send-message" class="send-message-button">Send</button>
                                             </div>
                     
-                                            <div class="smile">
-                                                <img src="img/smile.jpg" alt="smile">
-                                            </div>
+                                            <button id="stickers-button" class="smile"></button>
                                         </div>
                                     </div>
                                 </div>
@@ -104,6 +99,8 @@ let ChatPage = {
     after_render: async () => {
         document.getElementById('index-css-link').href = '../../../css/chat.css'
 
+        // console.log(currentUserState)
+
         let user = firebase.auth().currentUser
 
         let userHeaderInfo = document.getElementById("user-header")
@@ -114,6 +111,9 @@ let ChatPage = {
         let sendMsgButton = document.getElementById("send-message")
         let searchChatsInput = document.getElementById("chat-search-input")
         let searchChatButton = document.getElementById("chat-search-button")
+        let addDirectButton = document.getElementById("add-direct-button")
+        let addChannelButton = document.getElementById("add-channel-button")
+        let stickersButton = document.getElementById("stickers-button")
 
         userHeaderInfo.innerHTML += userHeader(user.displayName)
 
@@ -131,6 +131,22 @@ let ChatPage = {
                 }
                 await chatHandlers.setCurrentChat(currentUserState.id)
             }
+        })
+
+        // обработчик нажатия на кнопку стикеров
+        stickersButton.addEventListener("click", (event) => {
+            event.preventDefault()
+            presentModal(StickersModal)
+        })
+
+        // обработчик нажатия на добавить channel
+        addChannelButton.addEventListener("click", () => {
+            presentModal(AddChannelModal)
+        })
+
+        // обработчик нажатия на добавить direct
+        addDirectButton.addEventListener("click", () => {
+            presentModal(AddDirectModal)
         })
 
         // обработчик на кнопки добавления часа из списка
@@ -162,7 +178,7 @@ let ChatPage = {
         let ttt = ["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6", "-MGbuPf19GBPpuMIDbUM"]
         for (const chatId of ttt) {
             firebase.database().ref("/chat/" + chatId + "/messages").on("child_added", (snapshot) => {
-                chatHandlers.innerMessage(snapshot, currentUserState.id, chatMsgList)
+                chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
             })
         }
 
@@ -176,6 +192,7 @@ let ChatPage = {
             if (typeMsgInput.value != "") {
                 const message = new Message(
                     currentUserState.id,
+                    "text",
                     firebase.auth().currentUser.displayName,
                     true, 
                     typeMsgInput.value,

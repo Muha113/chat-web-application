@@ -2,13 +2,22 @@ import * as chatWindow from "../components/chatWindow.js"
 import {firebaseService} from "../services/index.js"
 
 export function innerMessage(snapshot, currentUsersStateId, elem) {
-    console.log("message recieved -> user chat id: " + currentUsersStateId + ", message chat id: " + snapshot.val().chatId)
-    if (currentUsersStateId == snapshot.val().chatId) {
-        elem.innerHTML += chatWindow.firstMessage(
-            snapshot.val().username,
-            snapshot.val().time,
-            snapshot.val().text
-        )
+    console.log("message recieved -> user chat id: " + currentUsersStateId + ", message chat id: " + snapshot.chatId)
+    if (currentUsersStateId == snapshot.chatId) {
+        console.log(snapshot.type)
+        if (snapshot.type == "text") {
+            elem.innerHTML += chatWindow.firstMessage(
+                snapshot.username,
+                snapshot.time,
+                snapshot.text
+            )
+        } else if (snapshot.type == "sticker") {
+            elem.innerHTML += chatWindow.stickerMessage(
+                snapshot.username,
+                snapshot.time,
+                snapshot.text
+            )
+        }
     }
 }
 
@@ -20,11 +29,9 @@ export async function setCurrentChat(newChatId) {
     console.log("messages: {")
     console.log(messages)
     console.log("}")
-    for (const msg of messages) {
-        chatMsgList.innerHTML += chatWindow.firstMessage(
-            msg[msg.id].username,
-            msg[msg.id].time,
-            msg[msg.id].text
-        )
+    if (messages != null) {
+        for (const msg of messages) {
+            innerMessage(msg[msg.id], newChatId, chatMsgList)
+        }
     }
 }

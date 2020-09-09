@@ -29,6 +29,7 @@ class FirebaseService {
         if (snapshot.exists()) {
             return snapshot.val()
         }
+        return null
     }
 
     async getChatById(id) {
@@ -36,6 +37,7 @@ class FirebaseService {
         if (snapshot.exists()) {
             return snapshot.val()
         }
+        return null
     }
 
     async getChatMessages(id) {
@@ -46,6 +48,7 @@ class FirebaseService {
                 ...snapshot.val()
             }))]
         }
+        return null
     }
 
     async getAllChats() {
@@ -56,12 +59,14 @@ class FirebaseService {
                 ...snapshot.val()
             }))]
         }
+        return null
     }
 
     createMessage(message) {
         console.log(message)
         firebase.database().ref("/chat/" + message.chatId + "/messages").push({
             chatId: message.chatId,
+            type: message.type,
             username: message.username,
             isRead: message.isRead,
             text: message.text,
@@ -78,6 +83,17 @@ class FirebaseService {
 
     setNewChatsToUser(chatsIds) {
         firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").set(chatsIds)
+    }
+
+    createChat(chatType, chatName, isPrivate, passwd) {
+        let newChat = {
+            type: chatType,
+            name: chatName,
+            private: isPrivate,
+            password: passwd,
+            members: 1
+        }
+        firebase.database().ref("chat/").push(newChat)
     }
 }
 

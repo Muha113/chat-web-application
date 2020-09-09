@@ -69,6 +69,12 @@ form > input {
     border-bottom-color: black;
 }
 
+form >input.form-submit-button:active {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
 .form-submit-button {
     background: linear-gradient(89.97deg, #ED0B0B 0.03%, #2602FF 99.97%);
     border-radius: 60px;

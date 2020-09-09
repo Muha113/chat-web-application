@@ -11,7 +11,6 @@ let searchChat = (chatId, chatName, totalMembers, isAlreadyExist) => {
                         <p class="search-list-item-members">Members : ${totalMembers}</p>
                     </div>
                 </li>`
-
     return search
 }
 
