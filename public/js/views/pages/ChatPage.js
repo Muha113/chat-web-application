@@ -3,6 +3,7 @@ import * as chatMenu from "../../components/chatsMenu.js"
 import * as chatWindow from "../../components/chatWindow.js"
 import {Message} from "../../models/message.js"
 import {firebaseService} from "../../services/index.js"
+import Utils from "../../services/Utils.js"
 import * as chatHandlers from "../../handlers/chatHandlers.js"
 import * as searchChatsHandlers from "../../handlers/searchChatsHandlers.js"
 import * as menuHandlers from "../../handlers/menuHandlers.js"
@@ -117,9 +118,20 @@ let ChatPage = {
 
         userHeaderInfo.innerHTML += userHeader(user.displayName)
 
-        // динамическая начальная подгрузка direct чатов в меню слеваБ тоже самое надо для каналов
-        let userChats = await firebaseService.getUserChats()
-        await menuHandlers.uploadInitDirect(directMsgList, userChats)
+        // let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
+        // await menuHandlers.uploadInitDirect(directMsgList, userChats)
+
+        // добавление обработчиков на кнопки выбора канала
+        channelsList.addEventListener("click", async (event) => {
+            currentUserState.id = event.target.id
+            let element = document.getElementById(currentUserState.id)
+            if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
+                if (chatMsgList.classList.contains("list-show-border")) {
+                    chatMsgList.classList.remove("list-show-border")
+                }
+                await chatHandlers.setCurrentChat(currentUserState.id)
+            }
+        })
 
         // добавление обработчиков на кнопки выбора чата
         directMsgList.addEventListener("click", async (event) => {
@@ -149,13 +161,13 @@ let ChatPage = {
             presentModal(AddDirectModal)
         })
 
-        // обработчик на кнопки добавления часа из списка
+        // обработчик на кнопки добавления чата из списка
         chatMsgList.addEventListener("click", async (event) => {
             let element = document.getElementById(event.target.id)
             if (event.target.nodeName === "BUTTON" && element.classList.contains("add-new-chat-button")) {
                 console.log("!!!chat has been added!!!")
                 // временное решение
-                let userChats = await firebaseService.getUserChats()
+                let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
                 const id = event.target.id.split("_")[1]
                 userChats.push(id)
                 firebaseService.setNewChatsToUser(userChats)
@@ -173,14 +185,42 @@ let ChatPage = {
             await searchChatsHandlers.searchChats(searchChatsInput.value, chatMsgList)
         })
 
-        // тестовая подписка на все досупные щас чаты
+        // подписка на добавление сообщения в чат
         // добавить в firebaseService
-        let ttt = ["-MGbpneEnnuD11WkVngn", "-MGbuPezLdWBFhIfBga6", "-MGbuPf19GBPpuMIDbUM"]
-        for (const chatId of ttt) {
-            firebase.database().ref("/chat/" + chatId + "/messages").on("child_added", (snapshot) => {
-                chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
-            })
+        const userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
+        if (userChats != null) {
+            // console.log(userChats)
+            for (const chatId of userChats) {
+                firebase.database().ref("/chat/" + chatId + "/messages").on("child_added", (snapshot) => {
+                    chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
+                })
+            }
         }
+
+        // подписка на добавление нового чата у юзера
+        firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").on("child_added", async (snapshot) => {
+            console.log(snapshot.val())
+            const chat = await firebaseService.getChatById(snapshot.val())
+            if (chat != null) {
+               if (chat.type == "direct") {
+                    console.log("adding new direct")
+                    const usernameFull = chat.name
+                    const usernameSplited = usernameFull.split("$")
+                    Utils.removeElemFromArray(usernameSplited, firebase.auth().currentUser.displayName)
+                    directMsgList.innerHTML += chatMenu.directMessages(snapshot.val(), usernameSplited[0], 0)
+                } else if (chat.type == "channel") {
+                    if (chat.private) {
+                        channelsList.innerHTML += chatMenu.channelPrivate(snapshot.val(), chat.name, 0)
+                    } else {
+                        channelsList.innerHTML += chatMenu.channel(snapshot.val(), chat.name, 0)
+                    }
+                }
+                // подписка на новый добавленный чат
+                firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", (snapshot) => {
+                    chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
+                })
+            }
+        })
 
         // сделать id в порядке возрастания, иначе сообщения будут в рандомном порядке
         // тоже самое для чатов

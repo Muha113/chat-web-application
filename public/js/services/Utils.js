@@ -18,6 +18,14 @@ const Utils = {
     , sleep: (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    , removeElemFromArray: (array, elem) => {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i] == elem) {
+                array.splice(i, 1)
+            }
+        }
+    }
 }
 
 export default Utils;

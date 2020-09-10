@@ -575,7 +575,7 @@ button::-moz-focus-inner {
 }
 
 .stickers-grid .sticker {
-    background-image: url("../img/stickers/sticker1.png");
+    /* background-image: url("../img/stickers/sticker1.png"); */
     background-repeat: no-repeat;
     background-repeat: no-repeat;
     background-position: 0px 0px;

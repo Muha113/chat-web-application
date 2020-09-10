@@ -1,4 +1,5 @@
 import {closeModal} from "../../services/modalService.js"
+import { firebaseService } from "../../services/index.js"
 
 let AddChannelModal = {
     render: async () => {
@@ -15,21 +16,40 @@ let AddChannelModal = {
         return view
     },
     after_render: async () => {
-        const addChanelForm = document.getElementById("add-channel-form")
+        const addChannelForm = document.getElementById("add-channel-form")
         const privateRadiobutton = document.getElementById("add-channel-private-radiobutton")
 
-        addChanelForm.addEventListener("submit", (event) => {
+        addChannelForm.addEventListener("submit", async (event) => {
             event.preventDefault()
-            alert("Channel added success")
+
+            const newChannelName = addChannelForm.elements["chan-name"].value
+            const isPrivate = addChannelForm.elements["chan-type"].value != "public"
+            const passwd = isPrivate ? addChannelForm.elements["pass"].value : ""
+            const names = await firebaseService.getAllChannelsNames()
+            if (!names.includes(newChannelName)) {
+                const key = await firebaseService.createChat(
+                    "channel",
+                    newChannelName,
+                    isPrivate,
+                    passwd,
+                )
+
+                await firebaseService.addChatToUser(firebase.auth().currentUser.uid, key)
+
+                alert("Channel added success")
+                closeModal()
+                return
+            }
+            alert("This channel name is already used")
             closeModal()
         })
 
-        addChanelForm.addEventListener("change", (event) => {
+        addChannelForm.addEventListener("change", (event) => {
             if (event.target.name == "chan-type") {
                 if (event.target.value == "private") {
-                    addChanelForm.elements["pass"].disabled = false
+                    addChannelForm.elements["pass"].disabled = false
                 } else {
-                    addChanelForm.elements["pass"].disabled = true
+                    addChannelForm.elements["pass"].disabled = true
                 }
             }
         })

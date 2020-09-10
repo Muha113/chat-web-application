@@ -24,8 +24,8 @@ class FirebaseService {
         );
     }
 
-    async getUserChats() {
-        const snapshot = await firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").once("value")
+    async getUserChats(userId) {
+        const snapshot = await firebase.database().ref("/users/" + userId + "/chatsConnected").once("value")
         if (snapshot.exists()) {
             return snapshot.val()
         }
@@ -62,6 +62,46 @@ class FirebaseService {
         return null
     }
 
+    async getAllUsers() {
+        const snapshot = await firebase.database().ref("/users").once("value")
+        if (snapshot.exists()) {
+            console.log(snapshot.val())
+            return [...Object.keys(snapshot.val()).map(key => ({
+                id: key,
+                ...snapshot.val()
+            }))]
+        }
+        return null
+    }
+
+    async getUserChatsNames(userId) {
+        const userChats = await this.getUserChats(userId)
+        const userChatNames = []
+        if (userChats != null) {
+            console.log(userChats)
+            for (const userChat of userChats) {
+                const chat = await this.getChatById(userChat)
+                console.log(chat)
+                userChatNames.push(chat.name)
+            }
+        }
+        console.log(userChatNames)
+        return userChatNames
+    }
+
+    async getAllChannelsNames() {
+        const chats = await this.getAllChats()
+
+        const allChatsNames = []
+        for (const chat of chats) {
+            const chatObj = chat[chat.id]
+            if (chatObj.type == "channel") {
+                allChatsNames.push(chatObj.name)
+            }
+        }
+        return allChatsNames
+    }
+
     createMessage(message) {
         console.log(message)
         firebase.database().ref("/chat/" + message.chatId + "/messages").push({
@@ -74,26 +114,50 @@ class FirebaseService {
         })
         .then(res => {
             console.log(res.getKey())
+            // return res.getKey()
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.log(error)
+            // return null
+        });
     }
 
-    addChatToUser(chatId) {
+    async addChatToUser(userId, newChatId) {
+        const userChats = await this.getUserChats(userId)
+        if (userChats != null) {
+            userChats.push(newChatId)
+            console.log(userChats)
+            firebase.database().ref("/users/" + userId + "/chatsConnected").update(userChats)
+        } else {
+            const newChatsArray = [newChatId]
+            firebase.database().ref("/users/" + userId + "/chatsConnected").update(newChatsArray)
+        }
     }
 
-    setNewChatsToUser(chatsIds) {
-        firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").set(chatsIds)
+    setNewChatsToUser(userId, chatsIds) {
+        firebase.database().ref("/users/" + userId + "/chatsConnected").set(chatsIds)
     }
 
-    createChat(chatType, chatName, isPrivate, passwd) {
-        let newChat = {
+    async createChat(chatType, chatName, isPrivate, passwd) {
+        const newChat = {
             type: chatType,
             name: chatName,
             private: isPrivate,
             password: passwd,
-            members: 1
+            members: 2
         }
-        firebase.database().ref("chat/").push(newChat)
+
+        let result
+        result = await firebase.database().ref("chat/").push(newChat)
+            .then(res => {
+                return res.getKey()
+            })
+            .catch(err => {
+                alert(err)
+                return null
+            })
+
+        return result
     }
 }
 
