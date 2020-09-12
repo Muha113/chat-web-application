@@ -2,6 +2,7 @@ import {closeModal} from "../../services/modalService.js"
 import {currentUserState} from "../../services/currentUserState.js"
 import {firebaseService} from "../../services/index.js"
 import Message from "../../models/message.js"
+import Utils from "../../services/Utils.js"
 
 let StickersModal = {
     render: async () => {
@@ -18,16 +19,14 @@ let StickersModal = {
             if (event.target.nodeName === "BUTTON") {
                 console.log(event.target.style)
                 const imgUrlFull = event.target.style.backgroundImage
-                const imgUrl = imgUrlFull.split("\"")
-                const imgUrlSplit = imgUrl[1].split("/")
-                imgUrlSplit.reverse()
+                const imgUrl = Utils.getUrlFromImgAbsUrl(imgUrlFull)
 
                 const message = new Message(
                     currentUserState.id,
                     "sticker",
-                    firebase.auth().currentUser.displayName,
+                    firebase.auth().currentUser.uid,
                     true, 
-                    imgUrlSplit[0],
+                    imgUrl,
                     "11:50"
                 )
                 firebaseService.createMessage(message)

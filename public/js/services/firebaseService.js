@@ -3,25 +3,24 @@ import * as chatHandlers from "../handlers/chatHandlers.js"
 
 class FirebaseService {
 
-    // async readUserData({uid}) {
-    //     const snapshot = await firebase.database().ref("users/").child(uid).once("value");
-    //     const data = snapshot.val();
-    //     return data;
-    // }
-
-    usersRef() {
-        return firebase.database().ref("/users");
-    }
-
-    async writeUserData({uid}, email, username) {
-        await this.usersRef().child(uid).set(
+    async createUser({uid}, email, username, avatarUrl) {
+        await firebase.database().ref("/users/" + uid).set(
             {
                 email: email,
                 username: username,
-                // name: name,
-                // surname: surname,
+                avatarUrl: avatarUrl,
+                currentChatId: "$",
+                isTyping: false
             }
         );
+    }
+
+    async getUserById(userId) {
+        const snapshot = await firebase.database().ref("/users/" + userId).once("value")
+        if (snapshot.exists()) {
+            return snapshot.val()
+        }
+        return null
     }
 
     async getUserChats(userId) {
@@ -74,19 +73,41 @@ class FirebaseService {
         return null
     }
 
-    async getUserChatsNames(userId) {
+    async getConnectedUsersToChat(chatId) {
+        const snapshot = await firebase.database().ref("/chat/" + chatId + "/connectedUsers")
+        if (snapshot.exists()) {
+            return snapshot.val()
+        }
+        return null
+    }
+
+    async getUserIdByUsername(username) {
+        const users = await this.getAllUsers()
+        if (users != null) {
+            for (const user of users) {
+                if (user[user.id].username == username) {
+                    return user.id
+                }
+            }
+        }
+        return null
+    }
+
+    async getUserChatsConnectedId(userId) {
         const userChats = await this.getUserChats(userId)
-        const userChatNames = []
+        const connectedUsersToChats = []
         if (userChats != null) {
             console.log(userChats)
             for (const userChat of userChats) {
-                const chat = await this.getChatById(userChat)
-                console.log(chat)
-                userChatNames.push(chat.name)
+                const users = await this.getConnectedUsersToChat(userChat)
+                console.log(users)
+                if (users != null) {
+                    connectedUsersToChats.push(users)
+                }
             }
         }
-        console.log(userChatNames)
-        return userChatNames
+        console.log(connectedUsersToChats)
+        return connectedUsersToChats
     }
 
     async getAllChannelsNames() {
@@ -102,12 +123,56 @@ class FirebaseService {
         return allChatsNames
     }
 
+    async getUserAvatarUrl(userId) {
+        // console.log("User id -> " + userId)
+        const snapshot = await firebase.database().ref("/users/" + userId + "/avatarUrl").once("value")
+        // console.log(snapshot.val())
+        return snapshot.val()
+    }
+
+    async getUsername(userId) {
+        const snapshot = await firebase.database().ref("/users/" + userId + "/username").once("value")
+        return snapshot.val()
+    }
+
+    async changeUserAvatar(userId, file, metadata) {
+        const user = await this.getUserById(userId)
+        
+        if (user != null) {
+            const newUrl = await firebase.storage().ref("/avatars").child(userId).put(file, metadata)
+                .then((snapshot) => {
+                    return snapshot.ref.getDownloadURL().then(url => {
+                        console.log(url)
+                        return url
+                    })
+                })
+                .catch(error => {
+                    alert(error)
+                    return null
+                })
+            console.log(newUrl)
+            if (newUrl != null) {
+                user.avatarUrl = newUrl
+                firebase.database().ref("/users/" + userId).set(user)
+            }
+        }
+    }
+
+    async changeUserUsername(userId, newUsername) {
+        const user = await this.getUserById(userId)
+        
+        if (user != null) {
+            user.username = newUsername
+            firebase.database().ref("/users/" + userId).update(user)
+        }
+    }
+
     createMessage(message) {
         console.log(message)
         firebase.database().ref("/chat/" + message.chatId + "/messages").push({
             chatId: message.chatId,
             type: message.type,
-            username: message.username,
+            userId: message.userId,
             isRead: message.isRead,
             text: message.text,
             time: message.time
@@ -138,9 +203,22 @@ class FirebaseService {
         firebase.database().ref("/users/" + userId + "/chatsConnected").set(chatsIds)
     }
 
-    async createChat(chatType, chatName, isPrivate, passwd) {
+    async connectUserToChat(chatId, userId) {
+        const snapshot = await firebase.database().ref("/chat/" + chatId + "/connectedUsers").once("value")
+
+        if (snapshot.exists()) {
+            const newIds = snapshot.val()
+            newIds.push(userId)
+            console.log(userId)
+            console.log(newIds)
+            firebase.database().ref("/chat/" + chatId + "/connectedUsers").update(newIds)
+        }
+    }
+
+    async createChat(chatType, connectedUsers, chatName, isPrivate, passwd) {
         const newChat = {
             type: chatType,
+            connectedUsers: connectedUsers,
             name: chatName,
             private: isPrivate,
             password: passwd,

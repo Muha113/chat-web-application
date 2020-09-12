@@ -1,19 +1,24 @@
 import * as chatWindow from "../components/chatWindow.js"
 import {firebaseService} from "../services/index.js"
 
-export function innerMessage(snapshot, currentUsersStateId, elem) {
+export async function innerMessage(snapshot, currentUsersStateId, elem) {
     console.log("message recieved -> user chat id: " + currentUsersStateId + ", message chat id: " + snapshot.chatId)
     if (currentUsersStateId == snapshot.chatId) {
-        console.log(snapshot.type)
+        // console.log(snapshot.type)
+        console.log(snapshot)
+        const username = await firebaseService.getUsername(snapshot.userId)
+        const userAvatarUrl = await firebaseService.getUserAvatarUrl(snapshot.userId)
         if (snapshot.type == "text") {
             elem.innerHTML += chatWindow.firstMessage(
-                snapshot.username,
+                username,
+                userAvatarUrl,
                 snapshot.time,
                 snapshot.text
             )
         } else if (snapshot.type == "sticker") {
             elem.innerHTML += chatWindow.stickerMessage(
-                snapshot.username,
+                username,
+                userAvatarUrl,
                 snapshot.time,
                 snapshot.text
             )
@@ -31,7 +36,7 @@ export async function setCurrentChat(newChatId) {
     console.log("}")
     if (messages != null) {
         for (const msg of messages) {
-            innerMessage(msg[msg.id], newChatId, chatMsgList)
+            await innerMessage(msg[msg.id], newChatId, chatMsgList)
         }
     }
 }

@@ -17,7 +17,6 @@ let AddChannelModal = {
     },
     after_render: async () => {
         const addChannelForm = document.getElementById("add-channel-form")
-        const privateRadiobutton = document.getElementById("add-channel-private-radiobutton")
 
         addChannelForm.addEventListener("submit", async (event) => {
             event.preventDefault()
@@ -26,15 +25,17 @@ let AddChannelModal = {
             const isPrivate = addChannelForm.elements["chan-type"].value != "public"
             const passwd = isPrivate ? addChannelForm.elements["pass"].value : ""
             const names = await firebaseService.getAllChannelsNames()
+            const currentUserId = firebase.auth().currentUser.uid
             if (!names.includes(newChannelName)) {
                 const key = await firebaseService.createChat(
                     "channel",
+                    [currentUserId],
                     newChannelName,
                     isPrivate,
                     passwd,
                 )
 
-                await firebaseService.addChatToUser(firebase.auth().currentUser.uid, key)
+                await firebaseService.addChatToUser(currentUserId, key)
 
                 alert("Channel added success")
                 closeModal()

@@ -1,4 +1,4 @@
-import {userHeader} from "../../components/chatHeader.js"
+import UserHeader from "../../components/chatHeader.js"
 import * as chatMenu from "../../components/chatsMenu.js"
 import * as chatWindow from "../../components/chatWindow.js"
 import {Message} from "../../models/message.js"
@@ -30,7 +30,7 @@ let ChatPage = {
                                 
                             </div>
                             <div id="user-header" class="user">
-
+                                ${await UserHeader.render(firebase.auth().currentUser.displayName)}
                             </div>
                         </div>
                         
@@ -102,9 +102,6 @@ let ChatPage = {
 
         // console.log(currentUserState)
 
-        let user = firebase.auth().currentUser
-
-        let userHeaderInfo = document.getElementById("user-header")
         let directMsgList = document.getElementById("direct-msgs-list")
         let chatMsgList = document.getElementById("chat-messages")
         let channelsList = document.getElementById("channels-list")
@@ -116,7 +113,7 @@ let ChatPage = {
         let addChannelButton = document.getElementById("add-channel-button")
         let stickersButton = document.getElementById("stickers-button")
 
-        userHeaderInfo.innerHTML += userHeader(user.displayName)
+        await UserHeader.after_render()
 
         // let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
         // await menuHandlers.uploadInitDirect(directMsgList, userChats)
@@ -146,56 +143,58 @@ let ChatPage = {
         })
 
         // обработчик нажатия на кнопку стикеров
-        stickersButton.addEventListener("click", (event) => {
-            event.preventDefault()
-            presentModal(StickersModal)
+        stickersButton.addEventListener("click", async () => {
+            await presentModal(StickersModal)
         })
 
         // обработчик нажатия на добавить channel
-        addChannelButton.addEventListener("click", () => {
-            presentModal(AddChannelModal)
+        addChannelButton.addEventListener("click", async () => {
+            await presentModal(AddChannelModal)
         })
 
         // обработчик нажатия на добавить direct
-        addDirectButton.addEventListener("click", () => {
-            presentModal(AddDirectModal)
+        addDirectButton.addEventListener("click", async () => {
+            await presentModal(AddDirectModal)
         })
 
         // обработчик на кнопки добавления чата из списка
         chatMsgList.addEventListener("click", async (event) => {
-            let element = document.getElementById(event.target.id)
+            const element = document.getElementById(event.target.id)
             if (event.target.nodeName === "BUTTON" && element.classList.contains("add-new-chat-button")) {
-                console.log("!!!chat has been added!!!")
-                // временное решение
-                let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
-                const id = event.target.id.split("_")[1]
-                userChats.push(id)
-                firebaseService.setNewChatsToUser(userChats)
-                menuHandlers.addChatToMenu(directMsgList, id)
+                const id = element.id.split("@")[1]
+                const chat = await firebaseService.getChatById(id)
+
+                if (chat.private) {
+                    const entryBlock = element.parentNode.parentNode
+                    console.log(entryBlock)
+                    const inputPass = entryBlock.querySelector(".search-channel-password-input")
+                    
+                    console.log("id -> " + id)
+
+                    if (inputPass.value == chat.password) {
+                        await searchChatsHandlers.addChat(channelsList, id)
+                        element.style.visibility = "hidden"
+                        alert("added success")
+                    } else {
+                        alert("Password do not match!")
+                    }
+                } else {
+                    await searchChatsHandlers.addChat(channelsList, id)
+                    element.style.visibility = "hidden"
+                    alert("added success")
+                }
             }
         })
 
         // обработчик на button - поиск чатов
-        searchChatButton.addEventListener("click", async (event) => {
-            event.preventDefault()
+        searchChatButton.addEventListener("click", async () => {
             chatMsgList.innerHTML = ""
             if (!chatMsgList.classList.contains("list-show-border")) {
                 chatMsgList.classList.add("list-show-border")
             }
+            console.log("emited search event")
             await searchChatsHandlers.searchChats(searchChatsInput.value, chatMsgList)
         })
-
-        // подписка на добавление сообщения в чат
-        // добавить в firebaseService
-        const userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
-        if (userChats != null) {
-            // console.log(userChats)
-            for (const chatId of userChats) {
-                firebase.database().ref("/chat/" + chatId + "/messages").on("child_added", (snapshot) => {
-                    chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
-                })
-            }
-        }
 
         // подписка на добавление нового чата у юзера
         firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").on("child_added", async (snapshot) => {
@@ -204,20 +203,22 @@ let ChatPage = {
             if (chat != null) {
                if (chat.type == "direct") {
                     console.log("adding new direct")
-                    const usernameFull = chat.name
-                    const usernameSplited = usernameFull.split("$")
-                    Utils.removeElemFromArray(usernameSplited, firebase.auth().currentUser.displayName)
-                    directMsgList.innerHTML += chatMenu.directMessages(snapshot.val(), usernameSplited[0], 0)
+                    const connectedUsersId = chat.connectedUsers
+                    Utils.removeElemFromArray(connectedUsersId, firebase.auth().currentUser.uid)
+                    const user = await firebaseService.getUserById(connectedUsersId[0])
+                    directMsgList.innerHTML += chatMenu.directMessages(snapshot.val(), user.username, 0)
                 } else if (chat.type == "channel") {
+                    console.log("adding new channel")
                     if (chat.private) {
                         channelsList.innerHTML += chatMenu.channelPrivate(snapshot.val(), chat.name, 0)
                     } else {
                         channelsList.innerHTML += chatMenu.channel(snapshot.val(), chat.name, 0)
                     }
                 }
-                // подписка на новый добавленный чат
-                firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", (snapshot) => {
-                    chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
+
+                // подписка на новый добавленный чат (так же срабатывает при запуске страницы, когда подгружается бд)
+                firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
+                    await chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
                 })
             }
         })
@@ -226,14 +227,16 @@ let ChatPage = {
         // тоже самое для чатов
 
         // отослать сообщение, добавление в бд сообщения
-        sendMsgButton.addEventListener("click", (event) => {
+        sendMsgButton.addEventListener("click", async (event) => {
             event.preventDefault()
             console.log(firebase.auth().currentUser.displayName)
             if (typeMsgInput.value != "") {
+                const avatarUrl = await firebaseService.getUserAvatarUrl(firebase.auth().currentUser.uid)
+                console.log(avatarUrl)
                 const message = new Message(
                     currentUserState.id,
                     "text",
-                    firebase.auth().currentUser.displayName,
+                    firebase.auth().currentUser.uid,
                     true, 
                     typeMsgInput.value,
                     "11:50"

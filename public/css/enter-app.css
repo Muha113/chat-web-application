@@ -69,7 +69,7 @@ form > input {
     border-bottom-color: black;
 }
 
-form >input.form-submit-button:active {
+form > input.form-submit-button:active {
     outline: none !important;
     outline-offset: 0 !important;
     box-shadow: none !important;

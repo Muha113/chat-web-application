@@ -55,9 +55,8 @@ function register(values) {
         .then((res) => {
             return res.user.updateProfile({displayName: values["username"]})
                 .then(() => {
-                    firebaseService.writeUserData(auth.currentUser, values["email"], values["username"]);
+                    firebaseService.createUser(auth.currentUser, values["email"], values["username"], "img/man.jpg");
                     localStorage.setItem("username", values["username"])
-                    // alert("Reg success")
                     Router._instance.navigate("/chat");
                 })
         }).catch(error => {

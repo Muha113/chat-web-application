@@ -26,6 +26,11 @@ const Utils = {
             }
         }
     }
+
+    , getUrlFromImgAbsUrl(absUrl) {
+        const imgUrl = absUrl.split("\"")
+        return imgUrl[1]
+    }
 }
 
 export default Utils;

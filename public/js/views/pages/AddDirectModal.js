@@ -16,43 +16,39 @@ let AddDirectModal = {
 
         addDirectForm.addEventListener("submit", async (event) => {
             event.preventDefault()
-            const users = await firebaseService.getAllUsers()
-            console.log(users)
+
             const searchUsernameText = addDirectForm.elements["username"].value
-            const currentUsername = firebase.auth().currentUser.displayName
+            const currentUserId = firebase.auth().currentUser.uid
 
-            const userChatsNames = await firebaseService.getUserChatsNames(firebase.auth().currentUser.uid)
-            if (userChatsNames != null) {
-                console.log(userChatsNames)
-                for (let i = 0; i < userChatsNames.length; i++) {
-                    const splited = userChatsNames[i].split("$")
-                    Utils.removeElemFromArray(splited, currentUsername)
-                    userChatsNames[i] = splited[0]
-                    console.log(userChatsNames[i])
+            const searchUserId = await firebaseService.getUserIdByUsername(searchUsernameText)
+            if (searchUserId == null) {
+                alert("There is no such user")
+                return
+            }
+            
+            const userChatsConnectedUsersId = await firebaseService.getUserChatsConnectedId(firebase.auth().currentUser.uid)
+            if (userChatsConnectedUsersId != null) {
+                for (let i = 0; i < userChatsConnectedUsersId.length; i++) {
+                    Utils.removeElemFromArray(userChatsConnectedUsersId[i], currentUserId)
                 }
-                if (userChatsNames.includes(searchUsernameText)) {
-                    alert("This chat already exists!")
+                if (userChatsConnectedUsersId.includes([searchUserId])) {
+                    alert("You already have chat with that user")
                     return
                 }
             }
 
-            for (const user of users) {
-                const name = user[user.id].username
-                if (name == searchUsernameText && name != currentUsername) {
-                    const key = await firebaseService.createChat(
-                        "direct",
-                        currentUsername + "$" + name,
-                        false,
-                        ""
-                    )
-                    await firebaseService.addChatToUser(firebase.auth().currentUser.uid, key)
-                    await firebaseService.addChatToUser(user.id, key)
-                    alert("Add new chat with \"" + name + "\" success")
-                    closeModal()
-                    return
-                }
-            }
-            alert("There is no such username")
+            const key = await firebaseService.createChat(
+                "direct",
+                [currentUserId, searchUserId],
+                "$",
+                false,
+                ""
+            )
+
+            await firebaseService.addChatToUser(currentUserId, key)
+            await firebaseService.addChatToUser(searchUserId, key)
+
+            alert("Creation success")
             closeModal()
         })
     }
