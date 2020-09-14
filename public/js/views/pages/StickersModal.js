@@ -20,14 +20,15 @@ let StickersModal = {
                 console.log(event.target.style)
                 const imgUrlFull = event.target.style.backgroundImage
                 const imgUrl = Utils.getUrlFromImgAbsUrl(imgUrlFull)
+                const currentDatetime = new Date().toISOString()
 
                 const message = new Message(
                     currentUserState.id,
                     "sticker",
                     firebase.auth().currentUser.uid,
-                    true, 
+                    false, 
                     imgUrl,
-                    "11:50"
+                    currentDatetime
                 )
                 firebaseService.createMessage(message)
                 closeModal()

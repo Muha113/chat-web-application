@@ -7,6 +7,7 @@ import Utils from "../../services/Utils.js"
 import * as chatHandlers from "../../handlers/chatHandlers.js"
 import * as searchChatsHandlers from "../../handlers/searchChatsHandlers.js"
 import * as menuHandlers from "../../handlers/menuHandlers.js"
+import * as elementHelpers from "../../helpers/elementHelper.js"
 import {presentModal} from "../../services/modalService.js"
 import AddDirectModal from "./AddDirectModal.js"
 import AddChannelModal from "./AddChannelModal.js"
@@ -75,7 +76,7 @@ let ChatPage = {
                                     </div>
                                 </div>
 
-                                <div class="create-mesage">
+                                <div id="create-message-block" class="create-mesage">
                                     <div class="content">
                                         <span class="user-is-typing"></span>
                                         <div>                    
@@ -101,6 +102,7 @@ let ChatPage = {
         const chatMsgList = document.getElementById("chat-messages")
         const channelsList = document.getElementById("channels-list")
         const typeMsgInput = document.getElementById("type-message")
+        const createMessageBlock = document.getElementById("create-message-block")
         const sendMsgButton = document.getElementById("send-message")
         const searchChatsInput = document.getElementById("chat-search-input")
         const searchChatButton = document.getElementById("chat-search-button")
@@ -114,14 +116,16 @@ let ChatPage = {
         // let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
         // await menuHandlers.uploadInitDirect(directMsgList, userChats)
 
+        let lastMenuButtonClicked = { btn: null }
+
         // добавление обработчиков на кнопки выбора канала
         channelsList.addEventListener("click", async (event) => {
-            await switchChatRoom(event, chatMsgList)
+            await switchChatRoom(event, chatMsgList, createMessageBlock, lastMenuButtonClicked)
         })
 
         // добавление обработчиков на кнопки выбора чата
         directMsgList.addEventListener("click", async (event) => {
-            await switchChatRoom(event, chatMsgList)
+            await switchChatRoom(event, chatMsgList, createMessageBlock, lastMenuButtonClicked)
         })
 
         // обработчик нажатия на кнопку стикеров
@@ -171,6 +175,7 @@ let ChatPage = {
         // обработчик на button - поиск чатов
         searchChatButton.addEventListener("click", async () => {
             chatMsgList.innerHTML = ""
+            switchToNonChatElements(createMessageBlock)
             if (!chatMsgList.classList.contains("list-show-border")) {
                 chatMsgList.classList.add("list-show-border")
             }
@@ -247,14 +252,10 @@ let ChatPage = {
 
         // отослать сообщение, добавление в бд сообщения
         sendMsgButton.addEventListener("click", async (event) => {
-            event.preventDefault()
-            console.log(firebase.auth().currentUser.displayName)
             if (typeMsgInput.value != "") {
-                // const avatarUrl = await firebaseService.getUserAvatarUrl(firebase.auth().currentUser.uid)
                 const datetime = new Date()
                 const currentDatetime = Utils.buildDateTime(datetime)
-                // console.log(currentDatetime)
-                // console.log(avatarUrl)
+
                 const message = new Message(
                     currentUserState.id,
                     "text",
@@ -264,19 +265,44 @@ let ChatPage = {
                     currentDatetime
                 )
 
-                const key = await firebaseService.createMessage(message)
+                await firebaseService.createMessage(message)
+
+                typeMsgInput.value = ""
             }
         })
     }
 }
 
-async function switchChatRoom(event, chatMsgList) {
+function switchToNonChatElements(createMsgBlock) {
+    currentUserState.id = ""
+    elementHelpers.changeElemDisplay(createMsgBlock, "none")
+}
+
+function switchToChatElements(createMsgBlock) {
+    if (elementHelpers.currentElemDisplay(createMsgBlock) !== "flex") {
+        elementHelpers.changeElemDisplay(createMsgBlock, "flex")
+    }
+}
+
+async function switchChatRoom(event, chatMsgList, createMsgBlock, lastMenuButtonClicked) {
     currentUserState.id = event.target.id
     const element = document.getElementById(currentUserState.id)
-    if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
+
+    if (element.nodeName === "BUTTON" && element.classList.contains("name")) {
         if (chatMsgList.classList.contains("list-show-border")) {
             chatMsgList.classList.remove("list-show-border")
         }
+
+        const parent = element.parentNode
+        elementHelpers.changeBackgroundColorElem(parent, "grey")
+
+        if (lastMenuButtonClicked.btn != null) {
+            elementHelpers.changeBackgroundColorElem(lastMenuButtonClicked.btn, "")
+        }
+
+        lastMenuButtonClicked.btn = parent
+        switchToChatElements(createMsgBlock)
+
         currentUserState.lastMsgDate = ""
         await chatHandlers.setCurrentChat(currentUserState.id, currentUserState)
     }

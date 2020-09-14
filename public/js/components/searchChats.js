@@ -31,7 +31,14 @@ let searchChatPrivate = (chatId, chatName, totalMembers, isAlreadyExist) => {
                 </li>`
     return search
 }
-{/* <img class="search-list-item-icon" src="img/plus-icon.png" alt=""> */}
+
+export let noResult = () => {
+    let noRes = `
+                <li>
+                    <span>No results</span>
+                </li>`
+    return noRes
+}
 
 export let searchChatsListItem = (chatId, chatName, isPrivate, totalMembers, isAlreadyExist) => {
     if (isPrivate) {
