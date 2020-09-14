@@ -200,7 +200,18 @@ let ChatPage = {
 
                 // подписка на новый добавленный чат (так же срабатывает при запуске страницы, когда подгружается бд)
                 firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
-                    await chatHandlers.innerMessage(snapshot.val(), currentUserState, chatMsgList)
+
+                    firebase.database().ref("/chat/" + snapshot.val().chatId + "/messages/" + snapshot.key + "/isRead").on("value", (snapshot) => {
+                        const chatKey = snapshot.ref.path.pieces_[1] 
+                        const msgKey = snapshot.ref.path.pieces_[3]
+                        const messageDiv = document.getElementById("message@" + msgKey)
+                        if (messageDiv && snapshot.val()) {
+                            messageDiv.style.backgroundColor = "white"
+                            firebase.database().ref("/chat/" + chatKey + "/messages/" + msgKey + "/isRead").off("value")
+                        }
+                    })
+
+                    await chatHandlers.innerMessage(snapshot.key, snapshot.val(), currentUserState, chatMsgList)
                 })
 
                 firebase.database().ref("/chat/" + snapshot.val() + "/userTyping").on("value", (snapshotUser) => {
@@ -221,14 +232,6 @@ let ChatPage = {
             }
         })
 
-        // async function aaa() {
-        //     await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set(firebase.auth().currentUser.displayName)
-
-        //     Utils.sleep(2000)
-
-        //     await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set("")
-        // }
-
         typeMsgInput.addEventListener("keypress", async () => {
             await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set(firebase.auth().currentUser.displayName)
 
@@ -241,9 +244,6 @@ let ChatPage = {
                 }
             }, 2000)
         })
-
-        // сделать id в порядке возрастания, иначе сообщения будут в рандомном порядке
-        // тоже самое для чатов
 
         // отослать сообщение, добавление в бд сообщения
         sendMsgButton.addEventListener("click", async (event) => {
@@ -259,11 +259,12 @@ let ChatPage = {
                     currentUserState.id,
                     "text",
                     firebase.auth().currentUser.uid,
-                    true, 
+                    false, 
                     typeMsgInput.value,
                     currentDatetime
                 )
-                firebaseService.createMessage(message)
+
+                const key = await firebaseService.createMessage(message)
             }
         })
     }

@@ -167,9 +167,10 @@ class FirebaseService {
         }
     }
 
-    createMessage(message) {
+    async createMessage(message) {
         console.log(message)
-        firebase.database().ref("/chat/" + message.chatId + "/messages").push({
+        let msgKey
+        msgKey = await firebase.database().ref("/chat/" + message.chatId + "/messages").push({
             chatId: message.chatId,
             type: message.type,
             userId: message.userId,
@@ -179,12 +180,14 @@ class FirebaseService {
         })
         .then(res => {
             console.log(res.getKey())
-            // return res.getKey()
+            return res.getKey()
         })
         .catch(error => {
             console.log(error)
-            // return null
+            return null
         });
+
+        return msgKey
     }
 
     async addChatToUser(userId, newChatId) {

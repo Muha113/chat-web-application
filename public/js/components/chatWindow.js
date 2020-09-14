@@ -1,4 +1,4 @@
-export let firstMessage = (username, avatarUrl, time, msg) => {
+export let firstMessage = (username, avatarUrl, time, msg, msgId, isRead) => {
     let firstMsg = `
                     <li class="first">
                         <div class="photo">
@@ -10,7 +10,7 @@ export let firstMessage = (username, avatarUrl, time, msg) => {
                                 <div class="time">${time}</div>
                             </div>
 
-                            <div class="message">
+                            <div id="message@${msgId}" class="message" style="background: ${isRead ? "white" : "grey"};">
                                 ${msg}
                             </div>
                         </div>
@@ -38,7 +38,7 @@ export let dateSeparator = (date) => {
     return separator
 }
 
-export let stickerMessage = (username, avatarUrl, time, imgUrl) => {
+export let stickerMessage = (username, avatarUrl, time, imgUrl, msgId, isRead) => {
     let sticker = `
                 <li class="first">
                     <div class="photo">
@@ -50,7 +50,7 @@ export let stickerMessage = (username, avatarUrl, time, imgUrl) => {
                             <div class="time">${time}</div>
                         </div>
 
-                        <div class="message">
+                        <div id="message@${msgId}" class="message" style="background: ${isRead ? "white" : "grey"};">
                             <img class="sticker-message" src="${imgUrl}" alt="sticker">
                         </div>
                     </div>
