@@ -187,6 +187,13 @@ button::-moz-focus-inner {
     height: 15%;
 }
 
+.chat-content .create-mesage .user-is-typing {
+    display: block;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    font-family: 'Quicksand', cursive;
+}
+
 .create-mesage .content > div {
     display: flex;
     justify-content: space-between;

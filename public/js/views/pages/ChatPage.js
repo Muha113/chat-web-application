@@ -77,11 +77,8 @@ let ChatPage = {
 
                                 <div class="create-mesage">
                                     <div class="content">
-                                        <div>
-                                            <div class="share">
-                                                <img src="img/addAtt.jpg" alt="add attachment">
-                                            </div>
-                    
+                                        <span class="user-is-typing"></span>
+                                        <div>                    
                                             <div class="message">
                                                 <input id="type-message" type="text" placeholder="Just start typing message">
                                                 <button id="send-message" class="send-message-button">Send</button>
@@ -100,18 +97,17 @@ let ChatPage = {
     after_render: async () => {
         document.getElementById('index-css-link').href = '../../../css/chat.css'
 
-        // console.log(currentUserState)
-
-        let directMsgList = document.getElementById("direct-msgs-list")
-        let chatMsgList = document.getElementById("chat-messages")
-        let channelsList = document.getElementById("channels-list")
-        let typeMsgInput = document.getElementById("type-message")
-        let sendMsgButton = document.getElementById("send-message")
-        let searchChatsInput = document.getElementById("chat-search-input")
-        let searchChatButton = document.getElementById("chat-search-button")
-        let addDirectButton = document.getElementById("add-direct-button")
-        let addChannelButton = document.getElementById("add-channel-button")
-        let stickersButton = document.getElementById("stickers-button")
+        const directMsgList = document.getElementById("direct-msgs-list")
+        const chatMsgList = document.getElementById("chat-messages")
+        const channelsList = document.getElementById("channels-list")
+        const typeMsgInput = document.getElementById("type-message")
+        const sendMsgButton = document.getElementById("send-message")
+        const searchChatsInput = document.getElementById("chat-search-input")
+        const searchChatButton = document.getElementById("chat-search-button")
+        const addDirectButton = document.getElementById("add-direct-button")
+        const addChannelButton = document.getElementById("add-channel-button")
+        const stickersButton = document.getElementById("stickers-button")
+        const userIsTyping = document.querySelector(".user-is-typing")
 
         await UserHeader.after_render()
 
@@ -120,26 +116,12 @@ let ChatPage = {
 
         // добавление обработчиков на кнопки выбора канала
         channelsList.addEventListener("click", async (event) => {
-            currentUserState.id = event.target.id
-            let element = document.getElementById(currentUserState.id)
-            if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
-                if (chatMsgList.classList.contains("list-show-border")) {
-                    chatMsgList.classList.remove("list-show-border")
-                }
-                await chatHandlers.setCurrentChat(currentUserState.id)
-            }
+            await switchChatRoom(event, chatMsgList)
         })
 
         // добавление обработчиков на кнопки выбора чата
         directMsgList.addEventListener("click", async (event) => {
-            currentUserState.id = event.target.id
-            let element = document.getElementById(currentUserState.id)
-            if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
-                if (chatMsgList.classList.contains("list-show-border")) {
-                    chatMsgList.classList.remove("list-show-border")
-                }
-                await chatHandlers.setCurrentChat(currentUserState.id)
-            }
+            await switchChatRoom(event, chatMsgList)
         })
 
         // обработчик нажатия на кнопку стикеров
@@ -218,9 +200,46 @@ let ChatPage = {
 
                 // подписка на новый добавленный чат (так же срабатывает при запуске страницы, когда подгружается бд)
                 firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
-                    await chatHandlers.innerMessage(snapshot.val(), currentUserState.id, chatMsgList)
+                    await chatHandlers.innerMessage(snapshot.val(), currentUserState, chatMsgList)
+                })
+
+                firebase.database().ref("/chat/" + snapshot.val() + "/userTyping").on("value", (snapshotUser) => {
+                    // console.log(">>>>>>> User (" + snapshotUser.val() + ") is typing in chat (" + snapshot.val() + ") <<<<<<<<<")
+                    // console.log()
+                    if (snapshotUser.val() != firebase.auth().currentUser.displayName) {
+                        let text;
+
+                        if (snapshotUser.exists() && snapshotUser.val() != "") {
+                            text = snapshotUser.val() + " is typing..."
+                        } else {
+                            text = ""
+                        }
+
+                        userIsTyping.textContent = text
+                    }
                 })
             }
+        })
+
+        // async function aaa() {
+        //     await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set(firebase.auth().currentUser.displayName)
+
+        //     Utils.sleep(2000)
+
+        //     await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set("")
+        // }
+
+        typeMsgInput.addEventListener("keypress", async () => {
+            await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set(firebase.auth().currentUser.displayName)
+
+            const text = typeMsgInput.value
+            let time = setTimeout(async () => {
+                if (text == typeMsgInput.value) {
+                    await firebase.database().ref("/chat/" + currentUserState.id + "/userTyping").set("")
+                } else {
+                    clearTimeout(time)
+                }
+            }, 2000)
         })
 
         // сделать id в порядке возрастания, иначе сообщения будут в рандомном порядке
@@ -231,19 +250,34 @@ let ChatPage = {
             event.preventDefault()
             console.log(firebase.auth().currentUser.displayName)
             if (typeMsgInput.value != "") {
-                const avatarUrl = await firebaseService.getUserAvatarUrl(firebase.auth().currentUser.uid)
-                console.log(avatarUrl)
+                // const avatarUrl = await firebaseService.getUserAvatarUrl(firebase.auth().currentUser.uid)
+                const datetime = new Date()
+                const currentDatetime = Utils.buildDateTime(datetime)
+                // console.log(currentDatetime)
+                // console.log(avatarUrl)
                 const message = new Message(
                     currentUserState.id,
                     "text",
                     firebase.auth().currentUser.uid,
                     true, 
                     typeMsgInput.value,
-                    "11:50"
+                    currentDatetime
                 )
                 firebaseService.createMessage(message)
             }
         })
+    }
+}
+
+async function switchChatRoom(event, chatMsgList) {
+    currentUserState.id = event.target.id
+    const element = document.getElementById(currentUserState.id)
+    if (event.target.nodeName === "BUTTON" && element.classList.contains("name")) {
+        if (chatMsgList.classList.contains("list-show-border")) {
+            chatMsgList.classList.remove("list-show-border")
+        }
+        currentUserState.lastMsgDate = ""
+        await chatHandlers.setCurrentChat(currentUserState.id, currentUserState)
     }
 }
 

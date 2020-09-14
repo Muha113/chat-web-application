@@ -1,21 +1,13 @@
 class CurrentUserState {
-    static _instance;
     chatType;
     id;
+    lastMsgDate;
 
     constructor(chatType, id) {
         this.chatType = chatType
         this.id = id
-    }
-
-    static init() {
-        if (CurrentUserState._instance != null) {
-            return CurrentUserState._instance
-        }
-
-        CurrentUserState._instance = new CurrentUserState("", "")
-        return CurrentUserState._instance
+        this.lastMsgDate = ""
     }
 }
 
-export const currentUserState = CurrentUserState.init()
+export const currentUserState = new CurrentUserState("", "")

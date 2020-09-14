@@ -16,7 +16,8 @@ const Utils = {
     }
 
     , sleep: (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        let start = new Date().getTime()
+        while (new Date().getTime() < start + ms);
     }
 
     , removeElemFromArray: (array, elem) => {
@@ -27,9 +28,19 @@ const Utils = {
         }
     }
 
-    , getUrlFromImgAbsUrl(absUrl) {
+    , getUrlFromImgAbsUrl: (absUrl) => {
         const imgUrl = absUrl.split("\"")
         return imgUrl[1]
+    }
+
+    , buildDateTime: (datetime) => {
+        const buildedDatetime = datetime.toISOString()
+        return buildedDatetime
+    }
+
+    , parseDatetime: (datetime) => {
+        const parsedDatetime = new Date(datetime)
+        return parsedDatetime
     }
 }
 
