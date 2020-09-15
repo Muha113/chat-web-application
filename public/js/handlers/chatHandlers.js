@@ -1,6 +1,7 @@
 import * as chatWindow from "../components/chatWindow.js"
 import {firebaseService} from "../services/index.js"
 import Utils from "../services/Utils.js"
+import {incrementMessagesUnread} from "../helpers/elementHelper.js"
 
 export async function innerMessage(msgId, snapshot, currentUserState, elem) {
     console.log("message recieved -> user chat id: " + currentUserState.id + ", message chat id: " + snapshot.chatId)
@@ -42,6 +43,17 @@ export async function innerMessage(msgId, snapshot, currentUserState, elem) {
 
         if (firebase.auth().currentUser.uid != snapshot.userId) {
             firebase.database().ref("/chat/" + snapshot.chatId + "/messages/" + msgId + "/isRead").set(true)
+        }
+        
+    } else {
+        if (firebase.auth().currentUser.uid != snapshot.userId && !snapshot.isRead) {
+            const btnId = snapshot.chatId
+            const btn = document.getElementById(btnId)
+
+            if (btn) {
+                const unreadMsgsElement = btn.parentNode.querySelector(".count-unread-messages")
+                incrementMessagesUnread(unreadMsgsElement)
+            }
         }
     }
 }

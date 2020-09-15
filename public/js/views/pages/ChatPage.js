@@ -6,7 +6,6 @@ import {firebaseService} from "../../services/index.js"
 import Utils from "../../services/Utils.js"
 import * as chatHandlers from "../../handlers/chatHandlers.js"
 import * as searchChatsHandlers from "../../handlers/searchChatsHandlers.js"
-import * as menuHandlers from "../../handlers/menuHandlers.js"
 import * as elementHelpers from "../../helpers/elementHelper.js"
 import {presentModal} from "../../services/modalService.js"
 import AddDirectModal from "./AddDirectModal.js"
@@ -21,9 +20,6 @@ let ChatPage = {
                     <div class="page">
 
                         <div class="top-nav">
-                            <div class="logo">
-                                <img src="img/logo.png" alt="logo">
-                            </div>
 
                             <div class="search">
                                 <input id="chat-search-input" type="text" placeholder="Global search">
@@ -112,9 +108,6 @@ let ChatPage = {
         const userIsTyping = document.querySelector(".user-is-typing")
 
         await UserHeader.after_render()
-
-        // let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
-        // await menuHandlers.uploadInitDirect(directMsgList, userChats)
 
         let lastMenuButtonClicked = { btn: null }
 
@@ -205,7 +198,6 @@ let ChatPage = {
 
                 // подписка на новый добавленный чат (так же срабатывает при запуске страницы, когда подгружается бд)
                 firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
-
                     firebase.database().ref("/chat/" + snapshot.val().chatId + "/messages/" + snapshot.key + "/isRead").on("value", (snapshot) => {
                         const chatKey = snapshot.ref.path.pieces_[1] 
                         const msgKey = snapshot.ref.path.pieces_[3]
@@ -219,10 +211,12 @@ let ChatPage = {
                     await chatHandlers.innerMessage(snapshot.key, snapshot.val(), currentUserState, chatMsgList)
                 })
 
+                // подписка на user is typing поле
                 firebase.database().ref("/chat/" + snapshot.val() + "/userTyping").on("value", (snapshotUser) => {
                     // console.log(">>>>>>> User (" + snapshotUser.val() + ") is typing in chat (" + snapshot.val() + ") <<<<<<<<<")
                     // console.log()
-                    if (snapshotUser.val() != firebase.auth().currentUser.displayName) {
+                    const chatId = snapshotUser.ref.path.pieces_[1]
+                    if (snapshotUser.val() != firebase.auth().currentUser.displayName && chatId == currentUserState.id) {
                         let text;
 
                         if (snapshotUser.exists() && snapshotUser.val() != "") {
@@ -294,7 +288,9 @@ async function switchChatRoom(event, chatMsgList, createMsgBlock, lastMenuButton
         }
 
         const parent = element.parentNode
+        const unreadMsgBlock = parent.querySelector(".count-unread-messages")
         elementHelpers.changeBackgroundColorElem(parent, "grey")
+        elementHelpers.setNewValueMessagesUnread(unreadMsgBlock, 0)
 
         if (lastMenuButtonClicked.btn != null) {
             elementHelpers.changeBackgroundColorElem(lastMenuButtonClicked.btn, "")

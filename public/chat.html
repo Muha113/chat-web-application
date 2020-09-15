@@ -3,19 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" type="text/css" href="css/chat.css">
 </head>
 
 <body>
     <div class="page">
         <nav class="top-nav">
-            <div class="logo">
+            <!-- <div class="logo">
                 <img src="img/logo.png" alt="logo">
-            </div>
+            </div> -->
 
             <div class="search">
-                <input type="text" placeholder="Global search">
+                <input type="text" class="search-input" placeholder="Global search">
                 <button class="search-button">Search</button>
             </div>
 
@@ -82,7 +83,7 @@
                             <button class="name">
                                 Coolinzh
                             </button>
-                            <div class="count-unread-messages">2</div>
+                            <label class="count-unread-messages">2</label>
                         </li>
                         <li class="user">
                             <div class="name">
@@ -121,7 +122,7 @@
             <div class="chat-content">
                 <div class="messages">
                     <div class="message-container">
-                            <ol class="list-show-border">
+                            <ol>
                                 <!-- <li class="search-list-li-nomargin">
                                     <div class="search-list-item">
                                         <h1 class="search-list-item-header">
@@ -226,7 +227,7 @@
                                         <img src="img/avatar.png" alt="user photo">
                                     </div>
                                     <div class="expand-width">
-                                        <div class="user-info">
+                                        <div class="user-info">w
                                             <div class="name">Username</div>
                                             <div class="time">9:54</div>
                                         </div>
@@ -272,10 +273,12 @@
 </body>
 <!-- <div>
     <div class="modal-style">
-        <form class="change-username-block">
-            <input name="username-input" class="username-input-text" type="password" placeholder="password" required>
-            <input name="username-save" class="username-input-save" type="submit" value="Add">
-        </form>
+        <div class="change-avatar-block">
+            <form id="change-username-form" class="change-username-block">
+                <input name="username-input" class="username-input-text" type="text" value="Username" required>
+                <input name="username-save" class="username-input-save" type="submit" value="Save">
+            </form>
+        </div>
     </div>
 </div> -->
 
