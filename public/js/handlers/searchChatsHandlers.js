@@ -5,14 +5,10 @@ import {addChatToMenu} from "../handlers/menuHandlers.js"
 
 export async function addChat(channelList, newChatId) {
     const userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
-    console.log("new chat id -> " + newChatId)
     userChats.push(newChatId)
-    console.log("to push -> " + userChats)
+
     firebaseService.setNewChatsToUser(firebase.auth().currentUser.uid, userChats)
     await firebaseService.connectUserToChat(newChatId, firebase.auth().currentUser.uid)
-
-    console.log("!!!chat has been added!!!")
-    // addChatToMenu(channelList, newChatId)
 }
 
 export async function searchChats(searchText, chatMsgList) {

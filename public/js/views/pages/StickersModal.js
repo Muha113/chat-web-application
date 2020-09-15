@@ -17,7 +17,7 @@ let StickersModal = {
 
         stickersGrid.addEventListener("click", (event) => {
             if (event.target.nodeName === "BUTTON") {
-                console.log(event.target.style)
+                
                 const imgUrlFull = event.target.style.backgroundImage
                 const imgUrl = Utils.getUrlFromImgAbsUrl(imgUrlFull)
                 const currentDatetime = new Date().toISOString()

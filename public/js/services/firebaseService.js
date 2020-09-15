@@ -168,7 +168,6 @@ class FirebaseService {
     }
 
     async createMessage(message) {
-        console.log(message)
         let msgKey
         msgKey = await firebase.database().ref("/chat/" + message.chatId + "/messages").push({
             chatId: message.chatId,
@@ -179,11 +178,9 @@ class FirebaseService {
             time: message.time
         })
         .then(res => {
-            console.log(res.getKey())
             return res.getKey()
         })
         .catch(error => {
-            console.log(error)
             return null
         });
 
@@ -194,7 +191,6 @@ class FirebaseService {
         const userChats = await this.getUserChats(userId)
         if (userChats != null) {
             userChats.push(newChatId)
-            console.log(userChats)
             firebase.database().ref("/users/" + userId + "/chatsConnected").update(userChats)
         } else {
             const newChatsArray = [newChatId]
@@ -212,8 +208,7 @@ class FirebaseService {
         if (snapshot.exists()) {
             const newIds = snapshot.val()
             newIds.push(userId)
-            console.log(userId)
-            console.log(newIds)
+            
             firebase.database().ref("/chat/" + chatId + "/connectedUsers").update(newIds)
         }
     }

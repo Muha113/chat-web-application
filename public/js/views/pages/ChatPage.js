@@ -111,32 +111,26 @@ let ChatPage = {
 
         let lastMenuButtonClicked = { btn: null }
 
-        // добавление обработчиков на кнопки выбора канала
         channelsList.addEventListener("click", async (event) => {
             await switchChatRoom(event, chatMsgList, createMessageBlock, lastMenuButtonClicked)
         })
 
-        // добавление обработчиков на кнопки выбора чата
         directMsgList.addEventListener("click", async (event) => {
             await switchChatRoom(event, chatMsgList, createMessageBlock, lastMenuButtonClicked)
         })
 
-        // обработчик нажатия на кнопку стикеров
         stickersButton.addEventListener("click", async () => {
             await presentModal(StickersModal)
         })
 
-        // обработчик нажатия на добавить channel
         addChannelButton.addEventListener("click", async () => {
             await presentModal(AddChannelModal)
         })
 
-        // обработчик нажатия на добавить direct
         addDirectButton.addEventListener("click", async () => {
             await presentModal(AddDirectModal)
         })
 
-        // обработчик на кнопки добавления чата из списка
         chatMsgList.addEventListener("click", async (event) => {
             const element = document.getElementById(event.target.id)
             if (event.target.nodeName === "BUTTON" && element.classList.contains("add-new-chat-button")) {
@@ -145,11 +139,8 @@ let ChatPage = {
 
                 if (chat.private) {
                     const entryBlock = element.parentNode.parentNode
-                    console.log(entryBlock)
                     const inputPass = entryBlock.querySelector(".search-channel-password-input")
                     
-                    console.log("id -> " + id)
-
                     if (inputPass.value == chat.password) {
                         await searchChatsHandlers.addChat(channelsList, id)
                         element.style.visibility = "hidden"
@@ -165,30 +156,27 @@ let ChatPage = {
             }
         })
 
-        // обработчик на button - поиск чатов
         searchChatButton.addEventListener("click", async () => {
             chatMsgList.innerHTML = ""
             switchToNonChatElements(createMessageBlock)
             if (!chatMsgList.classList.contains("list-show-border")) {
                 chatMsgList.classList.add("list-show-border")
             }
-            console.log("emited search event")
+
             await searchChatsHandlers.searchChats(searchChatsInput.value, chatMsgList)
         })
 
-        // подписка на добавление нового чата у юзера
         firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/chatsConnected").on("child_added", async (snapshot) => {
-            console.log(snapshot.val())
             const chat = await firebaseService.getChatById(snapshot.val())
             if (chat != null) {
                if (chat.type == "direct") {
-                    console.log("adding new direct")
                     const connectedUsersId = chat.connectedUsers
                     Utils.removeElemFromArray(connectedUsersId, firebase.auth().currentUser.uid)
+
                     const user = await firebaseService.getUserById(connectedUsersId[0])
                     directMsgList.innerHTML += chatMenu.directMessages(snapshot.val(), user.username, 0)
+
                 } else if (chat.type == "channel") {
-                    console.log("adding new channel")
                     if (chat.private) {
                         channelsList.innerHTML += chatMenu.channelPrivate(snapshot.val(), chat.name, 0)
                     } else {
@@ -196,7 +184,6 @@ let ChatPage = {
                     }
                 }
 
-                // подписка на новый добавленный чат (так же срабатывает при запуске страницы, когда подгружается бд)
                 firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
                     firebase.database().ref("/chat/" + snapshot.val().chatId + "/messages/" + snapshot.key + "/isRead").on("value", (snapshot) => {
                         const chatKey = snapshot.ref.path.pieces_[1] 
@@ -211,10 +198,7 @@ let ChatPage = {
                     await chatHandlers.innerMessage(snapshot.key, snapshot.val(), currentUserState, chatMsgList)
                 })
 
-                // подписка на user is typing поле
                 firebase.database().ref("/chat/" + snapshot.val() + "/userTyping").on("value", (snapshotUser) => {
-                    // console.log(">>>>>>> User (" + snapshotUser.val() + ") is typing in chat (" + snapshot.val() + ") <<<<<<<<<")
-                    // console.log()
                     const chatId = snapshotUser.ref.path.pieces_[1]
                     if (snapshotUser.val() != firebase.auth().currentUser.displayName && chatId == currentUserState.id) {
                         let text;
