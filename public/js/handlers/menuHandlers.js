@@ -5,7 +5,6 @@ export async function uploadInitDirect(directList, directChats) {
     if (directChats != null) {
         for (const id of directChats) {
             const chatData = await firebaseService.getChatById(id)
-            console.log(chatData)
             directList.innerHTML += chatMenu.directMessages(
                 id, 
                 chatData.name, 

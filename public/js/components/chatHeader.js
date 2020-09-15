@@ -25,14 +25,10 @@ let UserHeader = {
         })
 
         firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/avatarUrl").on("value", (snapshot) => {
-            console.log(snapshot.val())
             photoButton.style.backgroundImage = "url(\"" + snapshot.val() + "\")"
-            console.log(photoButton.style.backgroundImage)
         })
 
         firebase.database().ref("/users/" + firebase.auth().currentUser.uid + "/username").on("value", (snapshot) => {
-            console.log("Assign new username to span")
-            console.log(snapshot.val())
             usernameSpan.textContent = snapshot.val()
         })
     }

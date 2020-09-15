@@ -1,5 +1,4 @@
 import Utils from "./services/Utils.js";
-// import Header from "./views/components/header.js";
 import Error404 from "./views/pages/Error404.js";
 
 
@@ -32,17 +31,9 @@ export class Router {
         const router = new Router(routes);
         Router._instance = router;
         router._loadInitial();
-        // firebase.auth().onAuthStateChanged(function(user) {
-        //     router.render_header()
-        // });
+
         return router;
     }
-
-    // async render_header(){
-    //     const header = null || document.getElementById('header_container');
-    //     header.innerHTML = await Header.render();
-    //     await Header.after_render(this.parseCurrentURL());
-    // }
 
     navigate(url) {
         if (this.currentPage && this.currentPage.onDestroy){
@@ -57,9 +48,6 @@ export class Router {
 
     async loadPage(url){
         const content = null || document.getElementById('main-page');
-        // const header = null || document.getElementById('header_container');
-        // header.innerHTML = await Header.render();
-        // await Header.after_render(url);
 
         this.currentPage = Error404
         for (const { path, page} of Router._instance.routes) {
