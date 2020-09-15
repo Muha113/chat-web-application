@@ -107,6 +107,8 @@ let ChatPage = {
         const stickersButton = document.getElementById("stickers-button")
         const userIsTyping = document.querySelector(".user-is-typing")
 
+        elementHelpers.changeElemDisplay(createMessageBlock, "none")
+
         await UserHeader.after_render()
 
         let lastMenuButtonClicked = { btn: null }

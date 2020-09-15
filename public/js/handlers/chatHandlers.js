@@ -4,15 +4,10 @@ import Utils from "../services/Utils.js"
 import {incrementMessagesUnread} from "../helpers/elementHelper.js"
 
 export async function innerMessage(msgId, snapshot, currentUserState, elem) {
-    console.log("message recieved -> user chat id: " + currentUserState.id + ", message chat id: " + snapshot.chatId)
     if (currentUserState.id == snapshot.chatId) {
-        // console.log(snapshot.type)
-        // console.log(snapshot)
         const username = await firebaseService.getUsername(snapshot.userId)
         const userAvatarUrl = await firebaseService.getUserAvatarUrl(snapshot.userId)
-        // console.log(snapshot.time)
         const messageDatetime = Utils.parseDatetime(snapshot.time)
-        // console.log(messageDatetime)
         const messageDate = messageDatetime.toISOString().split("T")[0]
         const messageTime = messageDatetime.getHours() + ":" + messageDatetime.getMinutes()
 
