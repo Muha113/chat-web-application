@@ -26,8 +26,6 @@ export class Router {
             return Router._instance;
         }
 
-        const path = window.location.pathname;
-        window.history.replaceState({path}, path, path);
         const router = new Router(routes);
         Router._instance = router;
         router._loadInitial();
