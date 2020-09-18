@@ -74,7 +74,7 @@ class FirebaseService {
     }
 
     async getConnectedUsersToChat(chatId) {
-        const snapshot = await firebase.database().ref("/chat/" + chatId + "/connectedUsers")
+        const snapshot = await firebase.database().ref("/chat/" + chatId + "/connectedUsers").once("value")
         if (snapshot.exists()) {
             return snapshot.val()
         }
