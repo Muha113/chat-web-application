@@ -4,8 +4,12 @@ import { presentModal } from "../services/modalService.js"
 import {addChatToMenu} from "../handlers/menuHandlers.js"
 
 export async function addChat(channelList, newChatId) {
-    const userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
-    userChats.push(newChatId)
+    let userChats = await firebaseService.getUserChats(firebase.auth().currentUser.uid)
+    if (userChats != null) {
+        userChats.push(newChatId)
+    } else {
+        userChats = [newChatId]
+    }
 
     firebaseService.setNewChatsToUser(firebase.auth().currentUser.uid, userChats)
     await firebaseService.connectUserToChat(newChatId, firebase.auth().currentUser.uid)
@@ -25,7 +29,7 @@ export async function searchChats(searchText, chatMsgList) {
                     chat[chat.id].name,
                     chat[chat.id].private,
                     chat[chat.id].members,
-                    userChats.includes(chat.id)
+                    userChats != null && userChats.includes(chat.id)
                 )
             }
         }

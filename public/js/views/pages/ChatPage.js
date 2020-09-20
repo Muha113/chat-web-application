@@ -187,6 +187,7 @@ let ChatPage = {
                 }
 
                 firebase.database().ref("/chat/" + snapshot.val() + "/messages").on("child_added", async (snapshot) => {
+                    console.log("current user id -> " + firebase.auth().currentUser.uid)
                     firebase.database().ref("/chat/" + snapshot.val().chatId + "/messages/" + snapshot.key + "/isRead").on("value", (snapshot) => {
                         const chatKey = snapshot.ref.path.pieces_[1] 
                         const msgKey = snapshot.ref.path.pieces_[3]
